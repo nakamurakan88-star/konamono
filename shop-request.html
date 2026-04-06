@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>店舗登録申請 - お好み焼きDB</title>
+  <link rel="icon" href="images/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <a href="index.html">
+          <img src="images/icon.svg" alt="" class="logo-icon">
+          お好み焼きDB
+        </a>
+      </div>
+      <nav class="nav" id="nav">
+        <a href="shops.html">店舗一覧</a>
+        <a href="shop-request.html" id="nav-request">店舗登録申請</a>
+        <a href="#" class="nav-login" id="nav-auth">ログアウト</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="request-container">
+      <h1 class="section-title">📋 店舗登録申請</h1>
+      <p style="margin-bottom:24px; color:#795548;">
+        掲載されていないお好み焼き店の情報をお寄せください。審査後にサイトに掲載されます。
+      </p>
+
+      <div id="request-message" class="auth-message"></div>
+
+      <div class="request-form" id="request-form">
+        <div class="form-group">
+          <label>店舗名 *</label>
+          <input type="text" id="req-name" placeholder="例：お好み焼き まるちゃん">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>都道府県 *</label>
+            <select id="req-pref">
+              <option value="">選択してください</option>
+              <option value="北海道">北海道</option>
+              <option value="青森県">青森県</option>
+              <option value="岩手県">岩手県</option>
+              <option value="宮城県">宮城県</option>
+              <option value="秋田県">秋田県</option>
+              <option value="山形県">山形県</option>
+              <option value="福島県">福島県</option>
+              <option value="茨城県">茨城県</option>
+              <option value="栃木県">栃木県</option>
+              <option value="群馬県">群馬県</option>
+              <option value="埼玉県">埼玉県</option>
+              <option value="千葉県">千葉県</option>
+              <option value="東京都">東京都</option>
+              <option value="神奈川県">神奈川県</option>
+              <option value="新潟県">新潟県</option>
+              <option value="富山県">富山県</option>
+              <option value="石川県">石川県</option>
+              <option value="福井県">福井県</option>
+              <option value="山梨県">山梨県</option>
+              <option value="長野県">長野県</option>
+              <option value="岐阜県">岐阜県</option>
+              <option value="静岡県">静岡県</option>
+              <option value="愛知県">愛知県</option>
+              <option value="三重県">三重県</option>
+              <option value="滋賀県">滋賀県</option>
+              <option value="京都府">京都府</option>
+              <option value="大阪府">大阪府</option>
+              <option value="兵庫県">兵庫県</option>
+              <option value="奈良県">奈良県</option>
+              <option value="和歌山県">和歌山県</option>
+              <option value="鳥取県">鳥取県</option>
+              <option value="島根県">島根県</option>
+              <option value="岡山県">岡山県</option>
+              <option value="広島県">広島県</option>
+              <option value="山口県">山口県</option>
+              <option value="徳島県">徳島県</option>
+              <option value="香川県">香川県</option>
+              <option value="愛媛県">愛媛県</option>
+              <option value="高知県">高知県</option>
+              <option value="福岡県">福岡県</option>
+              <option value="佐賀県">佐賀県</option>
+              <option value="長崎県">長崎県</option>
+              <option value="熊本県">熊本県</option>
+              <option value="大分県">大分県</option>
+              <option value="宮崎県">宮崎県</option>
+              <option value="鹿児島県">鹿児島県</option>
+              <option value="沖縄県">沖縄県</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>市区町村 *</label>
+            <input type="text" id="req-city" placeholder="例：広島市中区">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>住所 *</label>
+          <input type="text" id="req-address" placeholder="例：広島県広島市中区八丁堀6-7">
+        </div>
+
+        <div class="form-group">
+          <label>電話番号</label>
+          <input type="tel" id="req-phone" placeholder="例：082-221-5438">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>営業時間</label>
+            <input type="text" id="req-hours" placeholder="例：11:00〜21:00">
+          </div>
+          <div class="form-group">
+            <label>定休日</label>
+            <input type="text" id="req-closed" placeholder="例：火曜日">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>スタイル *</label>
+            <select id="req-style">
+              <option value="広島風">広島風</option>
+              <option value="関西風">関西風</option>
+              <option value="モダン焼き">モダン焼き</option>
+              <option value="もんじゃ焼き">もんじゃ焼き</option>
+              <option value="その他">その他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>焼き方 *</label>
+            <select id="req-cooking">
+              <option value="店焼き">店焼き</option>
+              <option value="自分焼き">自分焼き</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>鉄板あり</label>
+            <select id="req-iron">
+              <option value="true">あり</option>
+              <option value="false">なし</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>持ち帰り</label>
+            <select id="req-takeout">
+              <option value="false">不可</option>
+              <option value="true">可</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%; margin-top:10px;" id="submit-request-btn" onclick="submitRequest()">
+          申請を送信する
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 お好み焼きDB. All rights reserved.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/shop-request.js"></script>
+</body>
+</html>

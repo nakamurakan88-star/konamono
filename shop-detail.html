@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>店舗詳細 - お好み焼きDB</title>
+  <link rel="icon" href="images/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <a href="index.html">
+          <img src="images/icon.svg" alt="" class="logo-icon">
+          お好み焼きDB
+        </a>
+      </div>
+      <nav class="nav" id="nav">
+        <a href="shops.html">店舗一覧</a>
+        <a href="shop-request.html" id="nav-request" style="display:none;">店舗登録申請</a>
+        <a href="login.html" class="nav-register" id="nav-register">新規登録</a>
+        <a href="login.html" class="nav-login" id="nav-auth">ログイン</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div id="shop-info">
+      <div class="loading">読み込み中</div>
+    </div>
+
+    <!-- Google Map -->
+    <div id="shop-map-container" style="display:none; margin-bottom:30px;">
+      <h2 class="section-title">📍 地図</h2>
+      <iframe id="shop-map" class="shop-map" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+
+    <!-- レビュー投稿フォーム -->
+    <div id="review-form-section" style="display:none;">
+      <h2 class="section-title">✍️ レビューを投稿する</h2>
+      <div id="review-form-content"></div>
+    </div>
+
+    <!-- レビュー一覧 -->
+    <section style="margin-top:30px;">
+      <h2 class="section-title">📝 レビュー一覧</h2>
+      <div id="reviews-list">
+        <div class="loading">読み込み中</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 お好み焼きDB. All rights reserved.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/shop-detail.js"></script>
+</body>
+</html>

@@ -1,0 +1,764 @@
+/* ============================================
+   お好み焼きDB - スタイルシート v2
+   ============================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+  background-color: #fdf6ec;
+  color: #3e2723;
+  line-height: 1.7;
+}
+
+a {
+  color: #d84315;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* --- ヘッダー --- */
+.header {
+  background: linear-gradient(135deg, #4e342e, #6d4c41);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffcc80;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo a {
+  color: #ffcc80;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  width: 36px;
+  height: 36px;
+}
+
+.nav {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.nav a {
+  color: #ffcc80;
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: 20px;
+  transition: background 0.3s;
+  white-space: nowrap;
+}
+
+.nav a:hover {
+  background: rgba(255,255,255,0.15);
+  text-decoration: none;
+}
+
+.nav-login {
+  background: #ff8f00 !important;
+  color: #fff !important;
+}
+
+.nav-login:hover {
+  background: #ff6f00 !important;
+}
+
+.nav-register {
+  background: transparent !important;
+  border: 1.5px solid #ffcc80 !important;
+  color: #ffcc80 !important;
+}
+
+.nav-register:hover {
+  background: rgba(255,204,128,0.15) !important;
+}
+
+/* --- メインコンテンツ --- */
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+/* --- ヒーローセクション --- */
+.hero {
+  background: linear-gradient(135deg, #5d4037, #8d6e63);
+  color: #fff;
+  text-align: center;
+  padding: 50px 20px;
+  border-radius: 16px;
+  margin-bottom: 40px;
+}
+
+.hero-logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 12px;
+}
+
+.hero h1 {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.hero p {
+  font-size: 16px;
+  opacity: 0.9;
+  margin-bottom: 24px;
+}
+
+/* --- 検索ボックス --- */
+.search-box {
+  display: flex;
+  gap: 10px;
+  max-width: 600px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.search-box select,
+.search-box input {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+}
+
+.search-box select {
+  background: #fff;
+  color: #3e2723;
+  min-width: 150px;
+}
+
+.search-box input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-box button {
+  padding: 12px 28px;
+  background: #ff8f00;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.search-box button:hover {
+  background: #ff6f00;
+}
+
+/* --- セクション見出し --- */
+.section-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid #ff8f00;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- 店舗カード --- */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.shop-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.shop-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.shop-card-image {
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(135deg, #8d6e63, #a1887f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: rgba(255,255,255,0.6);
+}
+
+.shop-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.shop-card-body {
+  padding: 16px;
+}
+
+.shop-card-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.shop-card-info {
+  font-size: 13px;
+  color: #795548;
+  margin-bottom: 4px;
+}
+
+.shop-card-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.tag-style {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.tag-cooking {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.tag-takeout {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* --- スコアバッジ --- */
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.score-high { background: #e65100; }
+.score-mid  { background: #ff8f00; }
+.score-low  { background: #a1887f; }
+.score-none { background: #bdbdbd; }
+
+/* --- 店舗詳細ページ --- */
+.shop-detail-header {
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  margin-bottom: 30px;
+}
+
+.shop-detail-top {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.shop-detail-image {
+  width: 300px;
+  height: 200px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #8d6e63, #a1887f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  color: rgba(255,255,255,0.5);
+  flex-shrink: 0;
+}
+
+.shop-detail-info {
+  flex: 1;
+}
+
+.shop-detail-name {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.shop-detail-meta {
+  font-size: 14px;
+  color: #5d4037;
+  line-height: 2;
+}
+
+.shop-detail-meta span {
+  display: block;
+}
+
+/* --- Google Map --- */
+.shop-map {
+  width: 100%;
+  height: 300px;
+  border-radius: 12px;
+  margin-top: 16px;
+  border: none;
+}
+
+/* --- レビュー一覧 --- */
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.review-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.review-user {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.review-date {
+  font-size: 12px;
+  color: #999;
+}
+
+.review-scores {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.review-score-item {
+  font-size: 13px;
+  color: #5d4037;
+}
+
+.review-score-item .stars {
+  color: #ff8f00;
+}
+
+.review-comment {
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.review-images {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.review-images img {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.review-images img:hover {
+  transform: scale(1.05);
+}
+
+/* --- レビュー投稿フォーム --- */
+.review-form {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="date"],
+.form-group input[type="tel"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #d7ccc8;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: #ff8f00;
+}
+
+.form-group textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+.form-group input[type="file"] {
+  font-size: 14px;
+}
+
+.star-rating {
+  display: flex;
+  gap: 4px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.star-rating .star {
+  color: #d7ccc8;
+  transition: color 0.2s;
+}
+
+.star-rating .star.active {
+  color: #ff8f00;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-primary {
+  background: #ff8f00;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #ff6f00;
+}
+
+.btn-secondary {
+  background: #efebe9;
+  color: #5d4037;
+}
+
+.btn-secondary:hover {
+  background: #d7ccc8;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- 画像プレビュー --- */
+.image-preview-container {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.image-preview-item {
+  position: relative;
+  width: 100px;
+  height: 75px;
+}
+
+.image-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.image-preview-item .remove-btn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  background: #e53935;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- 再投稿制限メッセージ --- */
+.review-cooldown {
+  background: #fff3e0;
+  border: 2px solid #ff8f00;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  color: #e65100;
+  font-weight: bold;
+}
+
+/* --- ログインページ --- */
+.auth-container {
+  max-width: 420px;
+  margin: 60px auto;
+  background: #fff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.auth-container h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 24px;
+}
+
+.auth-tabs {
+  display: flex;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #efebe9;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bold;
+  color: #a1887f;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s;
+}
+
+.auth-tab.active {
+  color: #ff8f00;
+  border-bottom-color: #ff8f00;
+}
+
+.auth-message {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  display: none;
+}
+
+.auth-message.error {
+  background: #fce4ec;
+  color: #c62828;
+  display: block;
+}
+
+.auth-message.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  display: block;
+}
+
+/* --- 店舗申請ページ --- */
+.request-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.request-form {
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+/* --- フッター --- */
+.footer {
+  background: #3e2723;
+  color: #a1887f;
+  text-align: center;
+  padding: 24px;
+  margin-top: 60px;
+  font-size: 13px;
+}
+
+/* --- ローディング --- */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #a1887f;
+  font-size: 16px;
+}
+
+.loading::after {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #d7ccc8;
+  border-top-color: #ff8f00;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- 空の状態 --- */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #a1887f;
+}
+
+.empty-state .icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+/* --- レスポンシブ --- */
+@media (max-width: 768px) {
+  .header-inner {
+    flex-direction: column;
+    height: auto;
+    padding: 12px 20px;
+    gap: 8px;
+  }
+
+  .nav {
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav a {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .hero h1 {
+    font-size: 24px;
+  }
+
+  .hero-logo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .search-box {
+    flex-direction: column;
+  }
+
+  .search-box select,
+  .search-box input {
+    min-width: auto;
+  }
+
+  .shop-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shop-detail-top {
+    flex-direction: column;
+  }
+
+  .shop-detail-image {
+    width: 100%;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}

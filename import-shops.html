@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>店舗データインポート（管理者用） - お好み焼きDB</title>
+  <link rel="icon" href="images/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <a href="index.html">
+          <img src="images/icon.svg" alt="" class="logo-icon">
+          お好み焼きDB
+        </a>
+      </div>
+      <nav class="nav">
+        <a href="index.html">トップ</a>
+        <a href="shops.html">店舗一覧</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <h1 class="import-page-title">🛠️ 店舗データインポート <span class="import-admin-badge">管理者用</span></h1>
+    <p class="import-page-desc">ホットペッパーグルメAPIからお好み焼き店を検索し、Supabaseのshopsテーブルに一括登録するツールです。</p>
+
+    <!-- ① 検索条件 -->
+    <section class="import-section">
+      <h2 class="import-section-title">① 検索条件</h2>
+      <div class="import-search-form">
+        <div class="import-form-row">
+          <label class="import-label" for="search-keyword">キーワード</label>
+          <input type="text" id="search-keyword" class="import-input" value="お好み焼き" placeholder="例: お好み焼き">
+        </div>
+        <div class="import-form-row">
+          <label class="import-label" for="search-area">大エリア</label>
+          <select id="search-area" class="import-select">
+            <option value="">全国</option>
+            <option value="Z011">東京</option>
+            <option value="Z023">大阪</option>
+            <option value="Z034">広島</option>
+            <option value="Z040">福岡</option>
+          </select>
+        </div>
+        <div class="import-form-row">
+          <label class="import-label" for="search-count">取得件数</label>
+          <select id="search-count" class="import-select">
+            <option value="20">20件</option>
+            <option value="50">50件</option>
+            <option value="100" selected>100件</option>
+          </select>
+        </div>
+        <div class="import-form-row">
+          <label class="import-label" for="default-style">デフォルトスタイル</label>
+          <select id="default-style" class="import-select">
+            <option value="関西風">関西風</option>
+            <option value="広島風">広島風</option>
+            <option value="東京風">東京風</option>
+            <option value="その他">その他</option>
+          </select>
+        </div>
+        <div class="import-form-actions">
+          <button id="search-btn" class="btn btn-primary" onclick="searchShops()">🔍 検索</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ② 検索結果プレビュー -->
+    <section class="import-section" id="preview-section" style="display:none;">
+      <h2 class="import-section-title">② 検索結果プレビュー</h2>
+      <div class="import-result-header">
+        <span id="result-count-label" class="import-count-label"></span>
+        <div class="import-select-actions">
+          <button class="btn btn-secondary" onclick="selectAll()">全選択</button>
+          <button class="btn btn-secondary" onclick="deselectAll()">全解除</button>
+        </div>
+      </div>
+      <div class="import-table-wrap">
+        <table class="import-table" id="preview-table">
+          <thead>
+            <tr>
+              <th class="import-th-check"><input type="checkbox" id="check-all" onchange="toggleAll(this)"></th>
+              <th>写真</th>
+              <th>店名</th>
+              <th>住所</th>
+              <th>営業時間</th>
+              <th>スタイル</th>
+            </tr>
+          </thead>
+          <tbody id="preview-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ③ インポート実行 -->
+    <section class="import-section" id="import-section" style="display:none;">
+      <h2 class="import-section-title">③ インポート実行</h2>
+      <div class="import-execute-area">
+        <p id="selected-count-label" class="import-selected-label"></p>
+        <button id="import-btn" class="btn btn-primary import-run-btn" onclick="runImport()">
+          ✅ 選択した店舗をSupabaseに登録
+        </button>
+      </div>
+      <div id="import-log" class="import-log" style="display:none;"></div>
+      <div id="import-summary" class="import-summary" style="display:none;"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 お好み焼きDB. All rights reserved.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/import-shops.js"></script>
+</body>
+</html>

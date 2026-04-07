@@ -1299,3 +1299,353 @@ a:hover {
     font-size: 22px;
   }
 }
+
+
+/* ============================================
+   インポートページ（管理者用）
+   ============================================ */
+
+/* ページタイトル */
+.import-page-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.import-admin-badge {
+  display: inline-block;
+  background: #e53935;
+  color: #fff;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 2px 10px;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+.import-page-desc {
+  font-size: 14px;
+  color: #795548;
+  margin-bottom: 28px;
+}
+
+/* セクション */
+.import-section {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  padding: 24px 28px;
+  margin-bottom: 24px;
+}
+
+.import-section-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 18px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #ff8f00;
+  color: #3e2723;
+}
+
+/* 検索フォーム */
+.import-search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.import-form-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.import-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #5d4037;
+  min-width: 130px;
+  flex-shrink: 0;
+}
+
+.import-input {
+  padding: 9px 13px;
+  border: 2px solid #d7ccc8;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  min-width: 200px;
+}
+
+.import-input:focus {
+  border-color: #ff8f00;
+}
+
+.import-select {
+  padding: 9px 13px;
+  border: 2px solid #d7ccc8;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+  color: #3e2723;
+  transition: border-color 0.2s;
+}
+
+.import-select:focus {
+  border-color: #ff8f00;
+}
+
+.import-input-sm {
+  padding: 5px 8px;
+  border: 1px solid #d7ccc8;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  background: #fff;
+  color: #3e2723;
+}
+
+.import-form-actions {
+  padding-top: 6px;
+}
+
+/* 結果ヘッダー */
+.import-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.import-count-label {
+  font-size: 15px;
+  font-weight: bold;
+  color: #3e2723;
+}
+
+.import-select-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* テーブル */
+.import-table-wrap {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e8e0da;
+}
+
+.import-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 600px;
+}
+
+.import-table thead tr {
+  background: #f5f0eb;
+}
+
+.import-table th {
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: bold;
+  color: #5d4037;
+  border-bottom: 2px solid #e8e0da;
+  white-space: nowrap;
+}
+
+.import-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f5f0eb;
+  vertical-align: top;
+}
+
+.import-th-check,
+.import-td-check {
+  width: 40px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.import-td-photo {
+  width: 80px;
+  text-align: center;
+}
+
+.import-thumb {
+  width: 70px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+  margin: 0 auto;
+}
+
+.import-no-photo {
+  font-size: 11px;
+  color: #bdbdbd;
+  display: block;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.import-shop-name {
+  font-weight: bold;
+  color: #3e2723;
+  margin-bottom: 3px;
+}
+
+.import-shop-genre {
+  font-size: 12px;
+  color: #9e9e9e;
+}
+
+.import-td-address {
+  max-width: 200px;
+  line-height: 1.5;
+  color: #5d4037;
+}
+
+.import-td-hours {
+  max-width: 160px;
+  font-size: 12px;
+  color: #5d4037;
+  line-height: 1.5;
+}
+
+.import-row:hover {
+  background: #fffde7;
+}
+
+/* インポート実行エリア */
+.import-execute-area {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.import-selected-label {
+  font-size: 15px;
+  font-weight: bold;
+  color: #5d4037;
+}
+
+.import-run-btn {
+  min-width: 240px;
+}
+
+/* ログ出力エリア */
+.import-log {
+  background: #1e1e1e;
+  color: #e0e0e0;
+  border-radius: 8px;
+  padding: 16px 18px;
+  font-size: 13px;
+  font-family: 'Courier New', monospace;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  line-height: 1.9;
+}
+
+.import-log-line {
+  display: block;
+}
+
+.import-log-line.log-success {
+  color: #69f0ae;
+}
+
+.import-log-line.log-skip {
+  color: #ffd54f;
+}
+
+.import-log-line.log-error {
+  color: #ff5252;
+}
+
+.import-log-line.log-warning {
+  color: #ffab40;
+}
+
+/* サマリー */
+.import-summary {
+  margin-top: 8px;
+}
+
+.import-summary-inner {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.import-summary-item {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px 24px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  min-width: 110px;
+}
+
+.import-summary-num {
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.import-summary-lbl {
+  font-size: 13px;
+  color: #5d4037;
+  font-weight: bold;
+}
+
+.success-item .import-summary-num { color: #43a047; }
+.skip-item   .import-summary-num { color: #ff8f00; }
+.error-item  .import-summary-num { color: #e53935; }
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .import-section {
+    padding: 16px 16px;
+  }
+
+  .import-form-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .import-label {
+    min-width: auto;
+  }
+
+  .import-input,
+  .import-select {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .import-execute-area {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .import-run-btn {
+    min-width: auto;
+    width: 100%;
+  }
+}

@@ -1016,3 +1016,286 @@ a:hover {
     gap: 6px;
   }
 }
+
+
+/* ============================================
+   店舗詳細ページ（ラーメンDB風リデザイン）
+   ============================================ */
+
+/* 店舗詳細ラッパー */
+.shop-detail-layout {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+/* 上段：画像 + テーブル横並び */
+.shop-detail-upper {
+  display: flex;
+  gap: 0;
+  align-items: flex-start;
+}
+
+/* 左：店舗画像（正方形） */
+.shop-detail-img-wrap {
+  flex-shrink: 0;
+  width: 300px;
+  min-width: 220px;
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(135deg, #8d6e63, #a1887f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;
+  color: rgba(255,255,255,0.55);
+  overflow: hidden;
+}
+
+.shop-detail-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 右：情報テーブルエリア */
+.shop-detail-table-wrap {
+  flex: 1;
+  padding: 24px 28px;
+}
+
+/* 店名 */
+.shop-detail-title {
+  font-size: 26px;
+  font-weight: bold;
+  color: #3e2723;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+/* 縦型テーブル */
+.shop-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.shop-info-table th {
+  background: #f5f0eb;
+  color: #5d4037;
+  font-weight: bold;
+  padding: 9px 14px;
+  text-align: left;
+  width: 110px;
+  border: 1px solid #e8e0da;
+  white-space: nowrap;
+}
+
+.shop-info-table td {
+  background: #fff;
+  color: #3e2723;
+  padding: 9px 14px;
+  border: 1px solid #e8e0da;
+  line-height: 1.6;
+}
+
+/* タグを td 内に横並び */
+.shop-info-table td .tag {
+  margin-right: 4px;
+  margin-bottom: 2px;
+}
+
+/* --- 統計ブロック --- */
+.shop-stats-block {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.shop-stats-score-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100px;
+}
+
+.shop-stats-score-num {
+  font-size: 52px;
+  font-weight: 900;
+  color: #ff8f00;
+  line-height: 1;
+}
+
+.shop-stats-score-label {
+  font-size: 13px;
+  color: #9e9e9e;
+  margin-top: 4px;
+}
+
+.shop-stats-divider {
+  width: 1px;
+  height: 60px;
+  background: #e8e0da;
+}
+
+.shop-stats-sub {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.shop-stats-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.shop-stats-item-num {
+  font-size: 26px;
+  font-weight: bold;
+  color: #3e2723;
+}
+
+.shop-stats-item-label {
+  font-size: 12px;
+  color: #9e9e9e;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* --- レビューカード（詳細ページ用） */
+.review-card-v2 {
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  margin-bottom: 14px;
+}
+
+.review-card-v2-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.review-card-v2-user {
+  font-weight: bold;
+  font-size: 14px;
+  color: #5d4037;
+  flex: 1;
+  min-width: 0;
+}
+
+.review-card-v2-score {
+  font-size: 28px;
+  font-weight: 900;
+  color: #ff8f00;
+  white-space: nowrap;
+}
+
+.review-card-v2-score-unit {
+  font-size: 14px;
+  font-weight: normal;
+  margin-left: 2px;
+}
+
+.review-card-v2-date {
+  font-size: 12px;
+  color: #bdbdbd;
+  white-space: nowrap;
+}
+
+.review-card-v2-stars {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #5d4037;
+}
+
+.review-card-v2-comment {
+  font-size: 14px;
+  color: #4e342e;
+  line-height: 1.8;
+  margin-bottom: 8px;
+}
+
+.review-card-v2-images {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.review-card-v2-images img {
+  width: 110px;
+  height: 82px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.review-card-v2-images img:hover {
+  transform: scale(1.05);
+}
+
+/* --- レスポンシブ（詳細ページ） --- */
+@media (max-width: 768px) {
+  .shop-detail-upper {
+    flex-direction: column;
+  }
+
+  .shop-detail-img-wrap {
+    width: 100%;
+    min-width: unset;
+    aspect-ratio: 4 / 3;
+  }
+
+  .shop-detail-table-wrap {
+    padding: 16px 16px;
+  }
+
+  .shop-detail-title {
+    font-size: 20px;
+  }
+
+  .shop-info-table th {
+    width: 90px;
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .shop-info-table td {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .shop-stats-block {
+    padding: 16px 18px;
+    gap: 18px;
+  }
+
+  .shop-stats-score-num {
+    font-size: 40px;
+  }
+
+  .shop-stats-item-num {
+    font-size: 20px;
+  }
+
+  .review-card-v2-score {
+    font-size: 22px;
+  }
+}

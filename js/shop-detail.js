@@ -224,6 +224,7 @@ function calculateShopScore(reviews) {
 
 async function loadShopDetail() {
   const container = document.getElementById('shop-info');
+  const statsContainer = document.getElementById('shop-stats');
 
   const { data: shop, error } = await supabaseClient
     .from('shops')
@@ -238,40 +239,84 @@ async function loadShopDetail() {
 
   const reviews = shop.reviews || [];
   const avgScore = calculateShopScore(reviews);
-
-  const scoreClass = avgScore >= 75 ? 'score-high'
-    : avgScore >= 50 ? 'score-mid'
-    : avgScore ? 'score-low'
-    : 'score-none';
+  const reviewCount = reviews.length;
+  const scoreDisplay = avgScore !== null ? avgScore.toFixed(1) : '-';
 
   document.title = `${shop.name} - お好み焼きDB`;
 
+  // ---- 店舗情報ブロック（画像 + テーブル） ----
+  const imageHtml = shop.image_url
+    ? `<img src="${shop.image_url}" alt="${shop.name}">`
+    : '🥞';
+
+  const addressText = shop.address || '情報なし';
+
   container.innerHTML = `
-    <div class="shop-detail-header">
-      <div class="shop-detail-top">
-        <div class="shop-detail-image">
-          ${shop.image_url ? `<img src="${shop.image_url}" alt="${shop.name}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">` : '🥞'}
+    <div class="shop-detail-layout">
+      <div class="shop-detail-upper">
+        <div class="shop-detail-img-wrap">
+          ${imageHtml}
         </div>
-        <div class="shop-detail-info">
-          <div style="display:flex; align-items:center; gap:16px; margin-bottom:12px;">
-            <h1 class="shop-detail-name" style="margin:0;">${shop.name}</h1>
-            <div class="score-badge ${scoreClass}" style="width:56px;height:56px;font-size:20px;">
-              ${avgScore || '-'}
-            </div>
-          </div>
-          <div class="shop-detail-meta">
-            <span>📍 ${shop.address}</span>
-            <span>📞 ${shop.phone || '情報なし'}</span>
-            <span>🕐 ${shop.business_hours || '情報なし'}</span>
-            <span>📅 定休日: ${shop.closed_days || '情報なし'}</span>
-            <span>📝 レビュー ${reviews.length}件</span>
-          </div>
-          <div class="shop-card-tags" style="margin-top:12px;">
-            <span class="tag tag-style">${shop.style}</span>
-            <span class="tag tag-cooking">${shop.cooking_style}</span>
-            ${shop.has_iron_plate ? '<span class="tag tag-cooking">鉄板あり</span>' : ''}
-            ${shop.takeout_available ? '<span class="tag tag-takeout">持ち帰り可</span>' : ''}
-          </div>
+        <div class="shop-detail-table-wrap">
+          <h1 class="shop-detail-title">${shop.name}</h1>
+          <table class="shop-info-table">
+            <tbody>
+              <tr>
+                <th>住所</th>
+                <td>${addressText}</td>
+              </tr>
+              <tr>
+                <th>電話</th>
+                <td>${shop.phone || '情報なし'}</td>
+              </tr>
+              <tr>
+                <th>営業時間</th>
+                <td>${shop.business_hours || '情報なし'}</td>
+              </tr>
+              <tr>
+                <th>定休日</th>
+                <td>${shop.closed_days || '情報なし'}</td>
+              </tr>
+              <tr>
+                <th>スタイル</th>
+                <td>${shop.style ? `<span class="tag tag-style">${shop.style}</span>` : '情報なし'}</td>
+              </tr>
+              <tr>
+                <th>焼き方</th>
+                <td>${shop.cooking_style ? `<span class="tag tag-cooking">${shop.cooking_style}</span>` : '情報なし'}</td>
+              </tr>
+              <tr>
+                <th>鉄板</th>
+                <td>${shop.has_iron_plate ? '<span class="tag tag-cooking">鉄板あり</span>' : 'なし'}</td>
+              </tr>
+              <tr>
+                <th>テイクアウト</th>
+                <td>${shop.takeout_available ? '<span class="tag tag-takeout">持ち帰り可</span>' : '不可'}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // ---- 統計ブロック ----
+  statsContainer.style.display = 'block';
+  statsContainer.innerHTML = `
+    <div class="shop-stats-block">
+      <div class="shop-stats-score-main">
+        <div class="shop-stats-score-num">${scoreDisplay}</div>
+        <div class="shop-stats-score-label">総合スコア</div>
+      </div>
+      <div class="shop-stats-divider"></div>
+      <div class="shop-stats-sub">
+        <div class="shop-stats-item">
+          <div class="shop-stats-item-num">${reviewCount}</div>
+          <div class="shop-stats-item-label">レビュー件数</div>
+        </div>
+        <div class="shop-stats-item">
+          <div class="shop-stats-item-num">${scoreDisplay !== '-' ? scoreDisplay + '点' : '-'}</div>
+          <div class="shop-stats-item-label">平均点</div>
         </div>
       </div>
     </div>
@@ -307,41 +352,46 @@ async function loadReviews() {
     return;
   }
 
-  container.innerHTML = '<div class="review-list">' + reviews.map(review => {
-    const stars = (score) => {
-      if (!score) return '<span style="color:#ccc">未評価</span>';
-      return '<span class="stars">' + '★'.repeat(score) + '</span><span style="color:#ddd">' + '★'.repeat(5 - score) + '</span>';
-    };
+  const stars = (score) => {
+    if (!score) return '<span style="color:#ccc">未評価</span>';
+    return '<span style="color:#ff8f00">' + '★'.repeat(score) + '</span><span style="color:#ddd">' + '★'.repeat(5 - score) + '</span>';
+  };
 
-    const date = review.visited_at ? new Date(review.visited_at).toLocaleDateString('ja-JP') : '';
+  container.innerHTML = reviews.map(review => {
+    const dateStr = review.created_at
+      ? new Date(review.created_at).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })
+      : '';
+    const visitStr = review.visited_at
+      ? '訪問日: ' + new Date(review.visited_at).toLocaleDateString('ja-JP')
+      : '';
 
     const imageUrls = review.image_urls || [];
     const imagesHtml = imageUrls.length > 0
-      ? `<div class="review-images">${imageUrls.map(url => `<img src="${url}" alt="レビュー写真" onclick="window.open('${url}','_blank')">`).join('')}</div>`
+      ? `<div class="review-card-v2-images">${imageUrls.map(url => `<img src="${url}" alt="レビュー写真" onclick="window.open('${url}','_blank')">`).join('')}</div>`
       : '';
 
+    const username = review.profiles?.username || '匿名ユーザー';
+
     return `
-      <div class="review-card">
-        <div class="review-header">
-          <div class="review-user">
-            👤 ${review.profiles?.username || '匿名ユーザー'}
-            <span class="score-badge ${review.overall_score >= 75 ? 'score-high' : review.overall_score >= 50 ? 'score-mid' : 'score-low'}"
-                  style="width:36px;height:36px;font-size:13px;margin-left:8px;">
-              ${review.overall_score}
-            </span>
+      <div class="review-card-v2">
+        <div class="review-card-v2-header">
+          <div class="review-card-v2-user">👤 ${username}</div>
+          <div class="review-card-v2-score">
+            ${review.overall_score}<span class="review-card-v2-score-unit">点</span>
           </div>
-          <div class="review-date">${date ? `訪問日: ${date}` : ''}</div>
+          <div class="review-card-v2-date">${dateStr}</div>
         </div>
-        <div class="review-scores">
-          <div class="review-score-item">生地: ${stars(review.dough_score)}</div>
-          <div class="review-score-item">具材: ${stars(review.ingredients_score)}</div>
-          <div class="review-score-item">ソース: ${stars(review.sauce_score)}</div>
+        <div class="review-card-v2-stars">
+          <span>生地: ${stars(review.dough_score)}</span>
+          <span>具材: ${stars(review.ingredients_score)}</span>
+          <span>ソース: ${stars(review.sauce_score)}</span>
+          ${visitStr ? `<span style="color:#9e9e9e; font-size:12px;">${visitStr}</span>` : ''}
         </div>
-        ${review.comment ? `<div class="review-comment">${review.comment}</div>` : ''}
+        ${review.comment ? `<div class="review-card-v2-comment">${review.comment}</div>` : ''}
         ${imagesHtml}
       </div>
     `;
-  }).join('') + '</div>';
+  }).join('');
 }
 
 // --- 星評価 ---

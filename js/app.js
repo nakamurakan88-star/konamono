@@ -73,7 +73,7 @@ function calculateShopScore(reviews) {
 }
 
 async function loadRanking() {
-  const grid = document.getElementById('ranking-grid');
+  const list = document.getElementById('ranking-list');
 
   const { data: shops, error } = await supabaseClient
     .from('shops')
@@ -81,7 +81,7 @@ async function loadRanking() {
     .limit(20);
 
   if (error) {
-    grid.innerHTML = '<div class="empty-state"><div class="icon">😢</div><p>データの読み込みに失敗しました</p></div>';
+    list.innerHTML = '<div class="empty-state"><div class="icon">😢</div><p>データの読み込みに失敗しました</p></div>';
     return;
   }
 
@@ -96,11 +96,11 @@ async function loadRanking() {
   const top6 = shopsWithScore.slice(0, 6);
 
   if (top6.length === 0) {
-    grid.innerHTML = '<div class="empty-state"><div class="icon">🍳</div><p>まだ店舗が登録されていません</p></div>';
+    list.innerHTML = '<div class="empty-state"><div class="icon">🍳</div><p>まだ店舗が登録されていません</p></div>';
     return;
   }
 
-  grid.innerHTML = top6.map((shop, i) => createShopCard(shop, i + 1)).join('');
+  list.innerHTML = top6.map((shop, i) => createRankingCard(shop, i + 1)).join('');
 }
 
 async function loadNewShops() {
@@ -158,6 +158,42 @@ function createShopCard(shop, rank) {
           <span class="tag tag-cooking">${shop.cooking_style}</span>
           ${shop.takeout_available ? '<span class="tag tag-takeout">持ち帰り可</span>' : ''}
         </div>
+      </div>
+    </div>
+  `;
+}
+
+
+function createRankingCard(shop, rank) {
+  const rankClass = rank <= 3 ? `rank-${rank}-card` : '';
+  const rankNumClass = rank <= 3 ? `rank-${rank}` : '';
+
+  const scoreText = shop.avgScore !== null && shop.avgScore !== undefined
+    ? (Math.round(shop.avgScore * 10) / 10).toFixed(1)
+    : null;
+  const scoreHtml = scoreText
+    ? `<div class="ranking-card-score">${scoreText}</div><div class="ranking-card-score-label">点</div>`
+    : `<div class="ranking-card-score score-none">-</div><div class="ranking-card-score-label">未評価</div>`;
+
+  const styleTags = [
+    shop.style ? `<span class="tag tag-style">${shop.style}</span>` : '',
+    shop.cooking_style ? `<span class="tag tag-cooking">${shop.cooking_style}</span>` : '',
+    shop.takeout_available ? '<span class="tag tag-takeout">持ち帰り可</span>' : ''
+  ].join('');
+
+  return `
+    <div class="ranking-card ${rankClass}" onclick="location.href='shop-detail.html?id=${shop.id}'">
+      <div class="ranking-card-rank ${rankNumClass}">${rank}</div>
+      <div class="ranking-card-body">
+        <div class="ranking-card-name">${shop.name}</div>
+        <div class="ranking-card-location">📍 ${shop.prefecture}${shop.city ? ' ' + shop.city : ''}</div>
+        <div class="ranking-card-meta">
+          ${styleTags}
+          <span class="ranking-card-review-count">📝 ${shop.reviewCount}件のレビュー</span>
+        </div>
+      </div>
+      <div class="ranking-card-score-area">
+        ${scoreHtml}
       </div>
     </div>
   `;

@@ -1708,3 +1708,180 @@ a:hover {
   border-radius: 6px;
   transition: width 0.3s ease;
 }
+
+/* ============================================
+   店舗一覧ページ v3 - 検索フォーム・地図・タブ
+   ============================================ */
+
+/* 検索フォーム全体 */
+.shops-search-box {
+  background: #fff;
+  padding: 20px 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.shops-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.shops-filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 150px;
+  flex: 1;
+}
+
+.shops-filter-label {
+  font-size: 12px;
+  font-weight: bold;
+  color: #795548;
+  letter-spacing: 0.03em;
+}
+
+.shops-filter-select {
+  padding: 9px 12px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.shops-filter-select:focus {
+  outline: none;
+  border-color: #ff7043;
+}
+
+.shops-filter-select:disabled {
+  background: #f5f5f5;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.shops-filter-btn-wrap {
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 8px;
+  min-width: auto;
+  flex: 0 0 auto;
+}
+
+/* 件数 + タブ行 */
+.shops-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.shops-result-count {
+  color: #795548;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* リスト/地図 タブ */
+.shops-view-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.shops-tab {
+  padding: 7px 18px;
+  border: 1.5px solid #ddd;
+  border-radius: 20px;
+  background: #fff;
+  color: #666;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.shops-tab:hover {
+  border-color: #ff7043;
+  color: #ff7043;
+}
+
+.shops-tab-active {
+  background: #ff7043;
+  border-color: #ff7043;
+  color: #fff;
+}
+
+/* 地図エリア */
+.shops-map-area {
+  width: 100%;
+  height: 560px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid #e0e0e0;
+  background: #f5f5f5;
+}
+
+.map-no-location {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #9e9e9e;
+  text-align: center;
+}
+
+/* 地図ポップアップ */
+.map-popup {
+  font-size: 13px;
+  line-height: 1.7;
+  min-width: 160px;
+}
+
+.map-popup a {
+  color: #e64a19;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.map-popup a:hover {
+  text-decoration: underline;
+}
+
+.map-popup-score {
+  display: inline-block;
+  background: #ff7043;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin: 2px 0;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .shops-filter-row {
+    flex-direction: column;
+  }
+  .shops-filter-item {
+    width: 100%;
+    min-width: 0;
+  }
+  .shops-filter-btn-wrap {
+    flex-direction: row;
+    width: 100%;
+  }
+  .shops-filter-btn-wrap .btn {
+    flex: 1;
+  }
+  .shops-map-area {
+    height: 380px;
+  }
+}

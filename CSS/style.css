@@ -1649,3 +1649,30 @@ a:hover {
     width: 100%;
   }
 }
+
+/* 認証バナー（インポートページ用） */
+.auth-banner {
+  border-radius: 10px;
+  padding: 13px 18px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.auth-banner a {
+  color: inherit;
+  text-decoration: underline;
+  margin-left: 8px;
+}
+
+.auth-banner-warn {
+  background: #fff3e0;
+  color: #e65100;
+  border: 2px solid #ff8f00;
+}
+
+.auth-banner-ok {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 2px solid #43a047;
+}

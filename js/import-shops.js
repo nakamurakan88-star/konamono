@@ -10,6 +10,31 @@ const HP_API_ENDPOINT = 'https://webservice.recruit.co.jp/hotpepper/gourmet/v1/'
 let fetchedShops = [];
 
 // ============================================
+// ページ読み込み時：認証チェック
+// ============================================
+document.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+
+  const authBanner = document.getElementById('auth-status-banner');
+  const searchBtn = document.getElementById('search-btn');
+  const importBtn = document.getElementById('import-btn');
+
+  if (!session) {
+    // 未ログイン：警告バナーを表示し、ボタンを無効化
+    authBanner.className = 'auth-banner auth-banner-warn';
+    authBanner.innerHTML = '⚠️ <strong>未ログイン状態です。</strong> Supabaseへの登録にはログインが必要です。 <a href="login.html">ログインする →</a>';
+    authBanner.style.display = 'block';
+    if (importBtn) importBtn.disabled = true;
+  } else {
+    // ログイン済み：ユーザー情報を表示
+    const email = session.user.email || session.user.id;
+    authBanner.className = 'auth-banner auth-banner-ok';
+    authBanner.innerHTML = `✅ ログイン済み: <strong>${email}</strong>`;
+    authBanner.style.display = 'block';
+  }
+});
+
+// ============================================
 // 都道府県・市区町村を住所文字列から抽出
 // ============================================
 function extractPrefecture(address) {
@@ -179,6 +204,13 @@ async function runImport() {
   const importLog = document.getElementById('import-log');
   const importSummary = document.getElementById('import-summary');
 
+  // ---- セッション再確認 ----
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) {
+    showMessage('❌ ログインしていないため登録できません。ログインしてから再試行してください。', 'error');
+    return;
+  }
+
   // 選択された店舗インデックスを収集
   const selectedIndices = [];
   document.querySelectorAll('.shop-check:checked').forEach(cb => {
@@ -211,12 +243,16 @@ async function runImport() {
     const address = shop.address || '';
     const prefecture = extractPrefecture(address);
     const city = extractCity(address);
-    const phone = shop.tel || shop.mobile_access || '';
-    const businessHours = shop.open || '';
-    const closedDays = shop.close || '';
-    const imageUrl = shop.photo?.pc?.l || '';
-    const lat = parseFloat(shop.lat) || null;
-    const lng = parseFloat(shop.lng) || null;
+    // tel が null/undefined/"" のいずれでも安全に処理
+    const phone = (shop.tel && shop.tel !== '') ? shop.tel : null;
+    const businessHours = shop.open || null;
+    const closedDays = shop.close || null;
+    const imageUrl = (shop.photo?.pc?.l) || null;
+    // lat/lng は数値型で来るが念のため変換し、0 や NaN はnullに
+    const latRaw = parseFloat(shop.lat);
+    const lngRaw = parseFloat(shop.lng);
+    const lat = (isFinite(latRaw) && latRaw !== 0) ? latRaw : null;
+    const lng = (isFinite(lngRaw) && lngRaw !== 0) ? lngRaw : null;
 
     appendLog(`処理中: ${name} ...`);
 
@@ -230,7 +266,7 @@ async function runImport() {
         .limit(1);
 
       if (checkErr) {
-        appendLog(`❌ エラー [${name}]: ${checkErr.message}`, 'error');
+        appendLog(`❌ エラー [${name}]: ${checkErr.message} (code: ${checkErr.code})`, 'error');
         errorCount++;
         continue;
       }
@@ -249,20 +285,20 @@ async function runImport() {
           address: address,
           prefecture: prefecture,
           city: city,
-          phone: phone || null,
-          business_hours: businessHours || null,
-          closed_days: closedDays || null,
+          phone: phone,
+          business_hours: businessHours,
+          closed_days: closedDays,
           style: style,
           cooking_style: '店焼き',
           has_iron_plate: true,
           takeout_available: false,
-          image_url: imageUrl || null,
+          image_url: imageUrl,
           latitude: lat,
           longitude: lng
         });
 
       if (insertErr) {
-        appendLog(`❌ エラー [${name}]: ${insertErr.message}`, 'error');
+        appendLog(`❌ エラー [${name}]: ${insertErr.message} (code: ${insertErr.code})`, 'error');
         errorCount++;
       } else {
         appendLog(`✅ 登録完了 [${name}]`, 'success');

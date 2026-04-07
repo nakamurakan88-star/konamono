@@ -762,3 +762,145 @@ a:hover {
     gap: 0;
   }
 }
+
+
+/* ============================================
+   ランキング セクション（ラーメンDB風グリッド）
+   ============================================ */
+
+/* セクションタイトルのバッジ */
+.title-badge {
+  display: inline-block;
+  background: #ff8f00;
+  color: #fff;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-weight: bold;
+  margin: 0 2px;
+  vertical-align: middle;
+}
+
+/* グリッドコンテナ：PC は5列横並び */
+.ranking-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* 各カード */
+.ranking-grid-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.ranking-grid-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.15);
+}
+
+/* 順位バッジ（左上に重ねる） */
+.ranking-grid-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff8f00, #FFD740);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  z-index: 1;
+  line-height: 1;
+}
+
+/* 写真エリア（正方形） */
+.ranking-grid-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: linear-gradient(135deg, #8d6e63, #a1887f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: rgba(255,255,255,0.7);
+}
+
+.ranking-grid-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* テキストエリア */
+.ranking-grid-body {
+  padding: 8px 10px 10px;
+}
+
+.ranking-grid-name {
+  font-size: 13px;
+  font-weight: bold;
+  color: #3e2723;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.ranking-grid-location {
+  font-size: 11px;
+  color: #9e9e9e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 「もっと見る」リンク */
+.ranking-more {
+  text-align: right;
+  margin-bottom: 36px;
+}
+
+.ranking-more-link {
+  font-size: 13px;
+  color: #ff8f00;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.ranking-more-link:hover {
+  text-decoration: underline;
+}
+
+/* ランキンググリッド レスポンシブ */
+@media (max-width: 900px) {
+  .ranking-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .ranking-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .ranking-grid-badge {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+}

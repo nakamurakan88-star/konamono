@@ -73,15 +73,15 @@ function calculateShopScore(reviews) {
 }
 
 async function loadRanking() {
-  const grid = document.getElementById('ranking-grid');
+  const list = document.getElementById('ranking-list');
 
   const { data: shops, error } = await supabaseClient
     .from('shops')
-    .select(`*, reviews (overall_score)`)
+    .select('id, name, prefecture, city, image_url, reviews (overall_score)')
     .limit(20);
 
   if (error) {
-    grid.innerHTML = '<div class="empty-state"><div class="icon">😢</div><p>データの読み込みに失敗しました</p></div>';
+    list.innerHTML = '<div class="empty-state"><div class="icon">😢</div><p>データの読み込みに失敗しました</p></div>';
     return;
   }
 
@@ -93,14 +93,14 @@ async function loadRanking() {
 
   shopsWithScore.sort((a, b) => (b.avgScore || 0) - (a.avgScore || 0));
 
-  const top6 = shopsWithScore.slice(0, 6);
+  const top5 = shopsWithScore.slice(0, 5);
 
-  if (top6.length === 0) {
-    grid.innerHTML = '<div class="empty-state"><div class="icon">🍳</div><p>まだ店舗が登録されていません</p></div>';
+  if (top5.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">🍳</div><p>まだ店舗が登録されていません</p></div>';
     return;
   }
 
-  grid.innerHTML = top6.map((shop, i) => createShopCard(shop, i + 1)).join('');
+  list.innerHTML = top5.map((shop, i) => createRankingCard(shop, i + 1)).join('');
 }
 
 async function loadNewShops() {
@@ -158,6 +158,25 @@ function createShopCard(shop, rank) {
           <span class="tag tag-cooking">${shop.cooking_style}</span>
           ${shop.takeout_available ? '<span class="tag tag-takeout">持ち帰り可</span>' : ''}
         </div>
+      </div>
+    </div>
+  `;
+}
+
+
+function createRankingCard(shop, rank) {
+  const imgHtml = shop.image_url
+    ? `<img src="${shop.image_url}" alt="${shop.name}" loading="lazy">`
+    : '🥞';
+  const location = [shop.prefecture, shop.city].filter(Boolean).join('');
+
+  return `
+    <div class="ranking-grid-card" onclick="location.href='shop-detail.html?id=${shop.id}'">
+      <div class="ranking-grid-badge">${rank}</div>
+      <div class="ranking-grid-img">${imgHtml}</div>
+      <div class="ranking-grid-body">
+        <div class="ranking-grid-name">${shop.name}</div>
+        <div class="ranking-grid-location">${location}</div>
       </div>
     </div>
   `;

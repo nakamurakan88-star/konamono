@@ -155,7 +155,9 @@ async function searchShops() {
       return;
     }
 
-    renderPreview(fetchedShops);
+    // Supabaseに登録済みの店舗を一括チェック（name+addressのセット）
+    const registeredSet = await fetchRegisteredSet();
+    renderPreview(fetchedShops, registeredSet);
 
   } catch (err) {
     showMessage('検索に失敗しました: ' + err.message, 'error');
@@ -171,9 +173,37 @@ async function searchShops() {
 }
 
 // ============================================
+// Supabase登録済み店舗を一括取得して name+address のSetを返す
+// （1000件以上ある場合はページングして全件取得）
+// ============================================
+async function fetchRegisteredSet() {
+  const registeredSet = new Set();
+  const PAGE = 1000;
+  let from = 0;
+
+  while (true) {
+    const { data, error } = await supabaseClient
+      .from('shops')
+      .select('name, address')
+      .range(from, from + PAGE - 1);
+
+    if (error || !data || data.length === 0) break;
+
+    data.forEach(row => {
+      registeredSet.add(`${row.name}__${row.address}`);
+    });
+
+    if (data.length < PAGE) break; // 最終ページ
+    from += PAGE;
+  }
+
+  return registeredSet;
+}
+
+// ============================================
 // ② プレビューテーブルを描画
 // ============================================
-function renderPreview(shops) {
+function renderPreview(shops, registeredSet = new Set()) {
   const tbody = document.getElementById('preview-tbody');
   const previewSection = document.getElementById('preview-section');
   const importSection = document.getElementById('import-section');
@@ -186,7 +216,8 @@ function renderPreview(shops) {
   importLog.innerHTML = '';
   importSummary.style.display = 'none';
 
-  countLabel.textContent = `${shops.length}件 取得`;
+  const newCount = shops.filter(s => !registeredSet.has(`${s.name}__${s.address || ''}`)).length;
+  countLabel.textContent = `${shops.length}件 取得 ／ 未登録 ${newCount}件 ／ 登録済み ${shops.length - newCount}件`;
 
   const defaultStyle = document.getElementById('default-style').value;
 
@@ -198,26 +229,30 @@ function renderPreview(shops) {
 
     const address = shop.address || '';
     const hours = shop.open || '情報なし';
+    const alreadyRegistered = registeredSet.has(`${shop.name}__${address}`);
 
     return `
-      <tr id="row-${idx}" class="import-row">
+      <tr id="row-${idx}" class="import-row${alreadyRegistered ? ' import-row-registered' : ''}">
         <td class="import-td-check">
-          <input type="checkbox" class="shop-check" data-idx="${idx}" checked>
+          <input type="checkbox" class="shop-check" data-idx="${idx}" data-new="${alreadyRegistered ? '0' : '1'}" ${alreadyRegistered ? '' : 'checked'}>
         </td>
         <td class="import-td-photo">${photoHtml}</td>
         <td class="import-td-name">
-          <div class="import-shop-name">${shop.name}</div>
+          <div class="import-shop-name">${shop.name}${alreadyRegistered ? ' <span class="import-registered-badge">登録済み</span>' : ''}</div>
           <div class="import-shop-genre">${shop.genre?.name || ''}</div>
         </td>
         <td class="import-td-address">${address}</td>
         <td class="import-td-hours">${hours}</td>
         <td class="import-td-style">
-          <select class="import-style-select import-input-sm" data-idx="${idx}">
+          ${alreadyRegistered
+            ? '<span class="import-registered-text">―</span>'
+            : `<select class="import-style-select import-input-sm" data-idx="${idx}">
             <option value="関西風" ${defaultStyle === '関西風' ? 'selected' : ''}>関西風</option>
             <option value="広島風" ${defaultStyle === '広島風' ? 'selected' : ''}>広島風</option>
             <option value="東京風" ${defaultStyle === '東京風' ? 'selected' : ''}>東京風</option>
             <option value="その他" ${defaultStyle === 'その他' ? 'selected' : ''}>その他</option>
-          </select>
+          </select>`
+          }
         </td>
       </tr>
     `;
@@ -247,7 +282,10 @@ function updateSelectedCount() {
 // 全選択 / 全解除
 // ============================================
 function selectAll() {
-  document.querySelectorAll('.shop-check').forEach(cb => { cb.checked = true; });
+  // 未登録のみを選択（登録済みはチェックしない）
+  document.querySelectorAll('.shop-check').forEach(cb => {
+    cb.checked = (cb.dataset.new === '1');
+  });
   document.getElementById('check-all').checked = true;
   updateSelectedCount();
 }

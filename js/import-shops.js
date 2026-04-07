@@ -4,7 +4,8 @@
 // ============================================
 
 const HP_API_KEY = 'b62667c3b7fc3547';
-const HP_API_ENDPOINT = 'https://webservice.recruit.co.jp/hotpepper/gourmet/v1/';
+// ローカルプロキシ経由でホットペッパーAPIを叩く（CORSヘッダーを付与するため）
+const HP_API_ENDPOINT = '/api/hotpepper';
 
 // 検索結果を保持する配列
 let fetchedShops = [];
@@ -50,7 +51,7 @@ function extractCity(address) {
 }
 
 // ============================================
-// ① 検索処理
+// ① 検索処理（ローカルプロキシ経由でfetch）
 // ============================================
 async function searchShops() {
   const keyword = document.getElementById('search-keyword').value.trim() || 'お好み焼き';
@@ -77,7 +78,7 @@ async function searchShops() {
     const res = await fetch(url);
 
     if (!res.ok) {
-      throw new Error(`APIエラー: HTTP ${res.status}`);
+      throw new Error('APIエラー: HTTP ' + res.status);
     }
 
     const json = await res.json();

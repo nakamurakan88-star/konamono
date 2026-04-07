@@ -51,17 +51,18 @@ function extractCity(address) {
 }
 
 // ============================================
-// ① 検索処理（ローカルプロキシ経由でfetch・ページング対応）
-// Hot Pepper APIの1リクエスト上限は100件なので、
-// 100件ずつ複数回リクエストして最大1000件まで取得する。
+// ① 検索処理（未登録N件集まるまでAPIをページング）
+// ・まずSupabaseの登録済みセットを取得
+// ・APIを100件ずつ取得し、未登録のみfetchedShopsに追加
+// ・未登録がtotalWant件に達するか、APIの全件を消化したら停止
 // ============================================
 async function searchShops() {
-  const keyword = document.getElementById('search-keyword').value.trim() || 'お好み焼き';
-  const area = document.getElementById('search-area').value;
+  const keyword   = document.getElementById('search-keyword').value.trim() || 'お好み焼き';
+  const area      = document.getElementById('search-area').value;
   const totalWant = parseInt(document.getElementById('search-count').value, 10);
-  const BATCH = 100; // APIの1リクエスト上限
+  const BATCH = 100; // API 1リクエスト上限
 
-  const searchBtn = document.getElementById('search-btn');
+  const searchBtn   = document.getElementById('search-btn');
   const progressWrap = document.getElementById('fetch-progress-wrap');
   const progressBar  = document.getElementById('fetch-progress-bar');
   const progressPct  = document.getElementById('fetch-progress-pct');
@@ -69,106 +70,91 @@ async function searchShops() {
 
   searchBtn.disabled = true;
   searchBtn.textContent = '検索中...';
-
-  // 複数回リクエストするときだけプログレスバーを表示
-  const useProgress = (totalWant > BATCH);
-  if (useProgress) {
-    progressWrap.style.display = 'block';
-    progressBar.style.width = '0%';
-    progressPct.textContent = '0%';
-    progressText.textContent = `取得中 (0 / ${totalWant}件)`;
-  }
+  progressWrap.style.display = 'block';
+  progressBar.style.width = '0%';
+  progressPct.textContent = '0%';
+  progressText.textContent = `登録済みデータを確認中...`;
 
   fetchedShops = [];
 
   try {
-    // 第1回リクエスト: 件数上限と全体の利用可能件数を確認
-    const firstCount = Math.min(totalWant, BATCH);
-    const firstParams = new URLSearchParams({
-      key: HP_API_KEY,
-      keyword: keyword,
-      count: firstCount,
-      format: 'json',
-      start: 1
-    });
-    if (area) firstParams.append('large_area', area);
+    // ── Step1: Supabase登録済みセットを先に取得 ──────────────
+    const registeredSet = await fetchRegisteredSet();
+    progressText.textContent = `登録済み ${registeredSet.size} 件確認済み。API検索中...`;
 
-    const firstRes = await fetch(`${HP_API_ENDPOINT}?${firstParams.toString()}`);
-    if (!firstRes.ok) throw new Error('APIエラー: HTTP ' + firstRes.status);
+    // ── Step2: APIを叩いて未登録のみ収集 ────────────────────
+    let start     = 1;
+    let available = Infinity; // 第1回レスポンスで確定
 
-    const firstJson = await firstRes.json();
-    const firstResults = firstJson.results;
-    if (!firstResults || !firstResults.shop) throw new Error('APIレスポンスの形式が不正です');
-
-    // APIが返した全体の利用可能件数
-    const available = parseInt(firstResults.results_available, 10) || 0;
-    // 実際に取得する上限 = ユーザー希望 vs API利用可能件数 の小さい方
-    const actualMax = Math.min(totalWant, available);
-
-    fetchedShops = fetchedShops.concat(firstResults.shop);
-
-    if (useProgress) {
-      const pct = Math.round((fetchedShops.length / actualMax) * 100);
-      progressBar.style.width = pct + '%';
-      progressPct.textContent = pct + '%';
-      progressText.textContent = `取得中 (${fetchedShops.length} / ${actualMax}件)`;
-    }
-
-    // 2回目以降: まだ不足していて、かつAPIに残りがある場合
-    let start = firstCount + 1;
-    while (fetchedShops.length < actualMax && start <= available) {
-      const remaining = actualMax - fetchedShops.length;
-      const batchCount = Math.min(remaining, BATCH);
-
+    while (fetchedShops.length < totalWant && start <= available) {
       const params = new URLSearchParams({
-        key: HP_API_KEY,
+        key:     HP_API_KEY,
         keyword: keyword,
-        count: batchCount,
-        format: 'json',
-        start: start
+        count:   BATCH,
+        format:  'json',
+        start:   start
       });
       if (area) params.append('large_area', area);
 
       const res = await fetch(`${HP_API_ENDPOINT}?${params.toString()}`);
       if (!res.ok) throw new Error('APIエラー: HTTP ' + res.status + ` (start=${start})`);
 
-      const json = await res.json();
-      const batch = json.results?.shop;
-      if (!batch || batch.length === 0) break; // これ以上結果なし
+      const json    = await res.json();
+      const results = json.results;
+      if (!results || !results.shop) throw new Error('APIレスポンスの形式が不正です');
 
-      fetchedShops = fetchedShops.concat(batch);
-      start += batchCount;
-
-      if (useProgress) {
-        const pct = Math.min(100, Math.round((fetchedShops.length / actualMax) * 100));
-        progressBar.style.width = pct + '%';
-        progressPct.textContent = pct + '%';
-        progressText.textContent = `取得中 (${fetchedShops.length} / ${actualMax}件)`;
+      // 第1回で全体件数を確定
+      if (start === 1) {
+        available = parseInt(results.results_available, 10) || 0;
       }
 
-      // レートリミット対策: 連続リクエスト間に少し待機
+      const batch = results.shop;
+      if (!batch || batch.length === 0) break;
+
+      // 未登録のみ追加
+      for (const shop of batch) {
+        const key = `${shop.name}__${shop.address || ''}`;
+        if (!registeredSet.has(key)) {
+          fetchedShops.push(shop);
+          if (fetchedShops.length >= totalWant) break;
+        }
+      }
+
+      start += BATCH;
+
+      // 進捗表示（APIの消化率 × 未登録の収集率の合算で視覚的に）
+      const apiProgress  = Math.min(start / (available || 1), 1);
+      const fillProgress = fetchedShops.length / totalWant;
+      const pct = Math.round(Math.max(apiProgress, fillProgress) * 100);
+      progressBar.style.width = Math.min(pct, 99) + '%';
+      progressPct.textContent = Math.min(pct, 99) + '%';
+      progressText.textContent =
+        `API取得中 (確認済み ${start - 1}/${available}件 ／ 未登録 ${fetchedShops.length}/${totalWant}件)`;
+
+      // レートリミット対策
       await new Promise(r => setTimeout(r, 200));
     }
 
     if (fetchedShops.length === 0) {
-      showMessage('検索結果が0件でした。キーワードやエリアを変更してお試しください。', 'warning');
+      showMessage(
+        `${registeredSet.size > 0
+          ? `登録済み ${registeredSet.size} 件を除外した結果、`
+          : ''}未登録の店舗が見つかりませんでした。`,
+        'warning'
+      );
       return;
     }
 
-    // Supabaseに登録済みの店舗を一括チェック（name+addressのセット）
-    const registeredSet = await fetchRegisteredSet();
-    renderPreview(fetchedShops, registeredSet);
+    renderPreview(fetchedShops, new Set()); // 表示はすべて未登録なのでregisteredSetは空でOK
 
   } catch (err) {
     showMessage('検索に失敗しました: ' + err.message, 'error');
   } finally {
     searchBtn.disabled = false;
     searchBtn.textContent = '🔍 検索';
-    if (useProgress) {
-      progressBar.style.width = '100%';
-      progressPct.textContent = '100%';
-      progressText.textContent = `取得完了 (${fetchedShops.length}件)`;
-    }
+    progressBar.style.width = '100%';
+    progressPct.textContent = '100%';
+    progressText.textContent = `完了 — 未登録 ${fetchedShops.length} 件を表示`;
   }
 }
 
@@ -216,8 +202,8 @@ function renderPreview(shops, registeredSet = new Set()) {
   importLog.innerHTML = '';
   importSummary.style.display = 'none';
 
-  const newCount = shops.filter(s => !registeredSet.has(`${s.name}__${s.address || ''}`)).length;
-  countLabel.textContent = `${shops.length}件 取得 ／ 未登録 ${newCount}件 ／ 登録済み ${shops.length - newCount}件`;
+  // 呼び出し元で登録済み除外済みなので shops はすべて未登録
+  countLabel.textContent = `未登録 ${shops.length}件 を表示中（すべて新規インポート可能）`;
 
   const defaultStyle = document.getElementById('default-style').value;
 
@@ -229,30 +215,26 @@ function renderPreview(shops, registeredSet = new Set()) {
 
     const address = shop.address || '';
     const hours = shop.open || '情報なし';
-    const alreadyRegistered = registeredSet.has(`${shop.name}__${address}`);
 
     return `
-      <tr id="row-${idx}" class="import-row${alreadyRegistered ? ' import-row-registered' : ''}">
+      <tr id="row-${idx}" class="import-row">
         <td class="import-td-check">
-          <input type="checkbox" class="shop-check" data-idx="${idx}" data-new="${alreadyRegistered ? '0' : '1'}" ${alreadyRegistered ? '' : 'checked'}>
+          <input type="checkbox" class="shop-check" data-idx="${idx}" data-new="1" checked>
         </td>
         <td class="import-td-photo">${photoHtml}</td>
         <td class="import-td-name">
-          <div class="import-shop-name">${shop.name}${alreadyRegistered ? ' <span class="import-registered-badge">登録済み</span>' : ''}</div>
+          <div class="import-shop-name">${shop.name}</div>
           <div class="import-shop-genre">${shop.genre?.name || ''}</div>
         </td>
         <td class="import-td-address">${address}</td>
         <td class="import-td-hours">${hours}</td>
         <td class="import-td-style">
-          ${alreadyRegistered
-            ? '<span class="import-registered-text">―</span>'
-            : `<select class="import-style-select import-input-sm" data-idx="${idx}">
+          <select class="import-style-select import-input-sm" data-idx="${idx}">
             <option value="関西風" ${defaultStyle === '関西風' ? 'selected' : ''}>関西風</option>
             <option value="広島風" ${defaultStyle === '広島風' ? 'selected' : ''}>広島風</option>
             <option value="東京風" ${defaultStyle === '東京風' ? 'selected' : ''}>東京風</option>
             <option value="その他" ${defaultStyle === 'その他' ? 'selected' : ''}>その他</option>
-          </select>`
-          }
+          </select>
         </td>
       </tr>
     `;

@@ -233,11 +233,48 @@ function createReviewCard(review) {
   `;
 }
 
+// トップページ ヒーロー検索：都道府県変更で市区町村を動的取得
+async function onHeroPrefChange() {
+  const pref = document.getElementById('search-pref').value;
+  const citySelect = document.getElementById('search-city');
+
+  citySelect.innerHTML = '<option value="">読み込み中...</option>';
+  citySelect.disabled = true;
+
+  if (!pref) {
+    citySelect.innerHTML = '<option value="">市・区・町（任意）</option>';
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('shops')
+      .select('city')
+      .eq('prefecture', pref)
+      .not('city', 'is', null)
+      .order('city', { ascending: true });
+
+    if (error) throw error;
+
+    const cities = [...new Set((data || []).map(r => r.city).filter(Boolean))].sort();
+
+    if (cities.length === 0) {
+      citySelect.innerHTML = '<option value="">（データなし）</option>';
+    } else {
+      citySelect.innerHTML = '<option value="">すべての市・区・町</option>'
+        + cities.map(c => `<option value="${c}">${c}</option>`).join('');
+      citySelect.disabled = false;
+    }
+  } catch (err) {
+    citySelect.innerHTML = '<option value="">取得失敗</option>';
+  }
+}
+
 function doSearch() {
   const pref = document.getElementById('search-pref').value;
-  const style = document.getElementById('search-style').value;
+  const city = document.getElementById('search-city').value;
   const params = new URLSearchParams();
   if (pref) params.set('pref', pref);
-  if (style) params.set('style', style);
+  if (city) params.set('city', city);
   location.href = `shops.html?${params.toString()}`;
 }

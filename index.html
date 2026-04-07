@@ -32,7 +32,7 @@
       <h1>お好み焼きDB</h1>
       <p>全国のお好み焼き店を探して、レビューを共有しよう</p>
       <div class="search-box">
-        <select id="search-pref">
+        <select id="search-pref" onchange="onHeroPrefChange()">
           <option value="">都道府県</option>
           <option value="北海道">北海道</option>
           <option value="青森県">青森県</option>
@@ -82,13 +82,8 @@
           <option value="鹿児島県">鹿児島県</option>
           <option value="沖縄県">沖縄県</option>
         </select>
-        <select id="search-style">
-          <option value="">スタイル</option>
-          <option value="広島風">広島風</option>
-          <option value="関西風">関西風</option>
-          <option value="モダン焼き">モダン焼き</option>
-          <option value="もんじゃ焼き">もんじゃ焼き</option>
-          <option value="その他">その他</option>
+        <select id="search-city" disabled>
+          <option value="">市・区・町（任意）</option>
         </select>
         <button onclick="doSearch()">検索</button>
       </div>

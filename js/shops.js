@@ -31,6 +31,8 @@ async function checkAuth() {
   const navRegister = document.getElementById('nav-register');
   const navRequest = document.getElementById('nav-request');
 
+  const navProfile = document.getElementById('nav-profile');
+
   if (session) {
     navAuth.textContent = 'ログアウト';
     navAuth.href = '#';
@@ -41,6 +43,7 @@ async function checkAuth() {
     };
     navRegister.style.display = 'none';
     if (navRequest) navRequest.style.display = 'inline-block';
+    if (navProfile) navProfile.style.display = 'inline-block';
   }
 }
 

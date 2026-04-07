@@ -15,7 +15,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   currentUser = session.user;
 
-  const navAuth = document.getElementById('nav-auth');
+  const navAuth     = document.getElementById('nav-auth');
+  const navRegister = document.getElementById('nav-register');
+  const navRequest  = document.getElementById('nav-request');
+  const navProfile  = document.getElementById('nav-profile');
+
   navAuth.textContent = 'ログアウト';
   navAuth.href = '#';
   navAuth.onclick = async (e) => {
@@ -23,6 +27,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     await supabaseClient.auth.signOut();
     location.href = 'index.html';
   };
+  if (navRegister) navRegister.style.display = 'none';
+  if (navRequest)  navRequest.style.display  = 'inline-block';
+  if (navProfile)  navProfile.style.display  = 'inline-block';
 });
 
 function showRequestMessage(text, type) {

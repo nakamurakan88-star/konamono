@@ -26,6 +26,7 @@ async function checkAuth() {
   const navAuth = document.getElementById('nav-auth');
   const navRegister = document.getElementById('nav-register');
   const navRequest = document.getElementById('nav-request');
+  const navProfile = document.getElementById('nav-profile');
 
   if (session) {
     currentUser = session.user;
@@ -38,6 +39,7 @@ async function checkAuth() {
     };
     navRegister.style.display = 'none';
     if (navRequest) navRequest.style.display = 'inline-block';
+    if (navProfile) navProfile.style.display = 'inline-block';
 
     // レビュー投稿可否チェック
     await checkReviewEligibility();

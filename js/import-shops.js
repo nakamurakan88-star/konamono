@@ -51,49 +51,110 @@ function extractCity(address) {
 }
 
 // ============================================
-// ① 検索処理（ローカルプロキシ経由でfetch）
+// ① 検索処理（ローカルプロキシ経由でfetch・ページング対応）
+// Hot Pepper APIの1リクエスト上限は100件なので、
+// 100件ずつ複数回リクエストして最大1000件まで取得する。
 // ============================================
 async function searchShops() {
   const keyword = document.getElementById('search-keyword').value.trim() || 'お好み焼き';
   const area = document.getElementById('search-area').value;
-  const count = parseInt(document.getElementById('search-count').value, 10);
+  const totalWant = parseInt(document.getElementById('search-count').value, 10);
+  const BATCH = 100; // APIの1リクエスト上限
 
   const searchBtn = document.getElementById('search-btn');
+  const progressWrap = document.getElementById('fetch-progress-wrap');
+  const progressBar  = document.getElementById('fetch-progress-bar');
+  const progressPct  = document.getElementById('fetch-progress-pct');
+  const progressText = document.getElementById('fetch-progress-text');
+
   searchBtn.disabled = true;
   searchBtn.textContent = '検索中...';
 
+  // 複数回リクエストするときだけプログレスバーを表示
+  const useProgress = (totalWant > BATCH);
+  if (useProgress) {
+    progressWrap.style.display = 'block';
+    progressBar.style.width = '0%';
+    progressPct.textContent = '0%';
+    progressText.textContent = `取得中 (0 / ${totalWant}件)`;
+  }
+
+  fetchedShops = [];
+
   try {
-    const params = new URLSearchParams({
+    // 第1回リクエスト: 件数上限と全体の利用可能件数を確認
+    const firstCount = Math.min(totalWant, BATCH);
+    const firstParams = new URLSearchParams({
       key: HP_API_KEY,
       keyword: keyword,
-      count: count,
+      count: firstCount,
       format: 'json',
       start: 1
     });
-    if (area) {
-      params.append('large_area', area);
+    if (area) firstParams.append('large_area', area);
+
+    const firstRes = await fetch(`${HP_API_ENDPOINT}?${firstParams.toString()}`);
+    if (!firstRes.ok) throw new Error('APIエラー: HTTP ' + firstRes.status);
+
+    const firstJson = await firstRes.json();
+    const firstResults = firstJson.results;
+    if (!firstResults || !firstResults.shop) throw new Error('APIレスポンスの形式が不正です');
+
+    // APIが返した全体の利用可能件数
+    const available = parseInt(firstResults.results_available, 10) || 0;
+    // 実際に取得する上限 = ユーザー希望 vs API利用可能件数 の小さい方
+    const actualMax = Math.min(totalWant, available);
+
+    fetchedShops = fetchedShops.concat(firstResults.shop);
+
+    if (useProgress) {
+      const pct = Math.round((fetchedShops.length / actualMax) * 100);
+      progressBar.style.width = pct + '%';
+      progressPct.textContent = pct + '%';
+      progressText.textContent = `取得中 (${fetchedShops.length} / ${actualMax}件)`;
     }
 
-    const url = `${HP_API_ENDPOINT}?${params.toString()}`;
-    const res = await fetch(url);
+    // 2回目以降: まだ不足していて、かつAPIに残りがある場合
+    let start = firstCount + 1;
+    while (fetchedShops.length < actualMax && start <= available) {
+      const remaining = actualMax - fetchedShops.length;
+      const batchCount = Math.min(remaining, BATCH);
 
-    if (!res.ok) {
-      throw new Error('APIエラー: HTTP ' + res.status);
+      const params = new URLSearchParams({
+        key: HP_API_KEY,
+        keyword: keyword,
+        count: batchCount,
+        format: 'json',
+        start: start
+      });
+      if (area) params.append('large_area', area);
+
+      const res = await fetch(`${HP_API_ENDPOINT}?${params.toString()}`);
+      if (!res.ok) throw new Error('APIエラー: HTTP ' + res.status + ` (start=${start})`);
+
+      const json = await res.json();
+      const batch = json.results?.shop;
+      if (!batch || batch.length === 0) break; // これ以上結果なし
+
+      fetchedShops = fetchedShops.concat(batch);
+      start += batchCount;
+
+      if (useProgress) {
+        const pct = Math.min(100, Math.round((fetchedShops.length / actualMax) * 100));
+        progressBar.style.width = pct + '%';
+        progressPct.textContent = pct + '%';
+        progressText.textContent = `取得中 (${fetchedShops.length} / ${actualMax}件)`;
+      }
+
+      // レートリミット対策: 連続リクエスト間に少し待機
+      await new Promise(r => setTimeout(r, 200));
     }
 
-    const json = await res.json();
-    const results = json.results;
-
-    if (!results || !results.shop) {
-      throw new Error('APIレスポンスの形式が不正です');
-    }
-
-    if (results.shop.length === 0) {
+    if (fetchedShops.length === 0) {
       showMessage('検索結果が0件でした。キーワードやエリアを変更してお試しください。', 'warning');
       return;
     }
 
-    fetchedShops = results.shop;
     renderPreview(fetchedShops);
 
   } catch (err) {
@@ -101,6 +162,11 @@ async function searchShops() {
   } finally {
     searchBtn.disabled = false;
     searchBtn.textContent = '🔍 検索';
+    if (useProgress) {
+      progressBar.style.width = '100%';
+      progressPct.textContent = '100%';
+      progressText.textContent = `取得完了 (${fetchedShops.length}件)`;
+    }
   }
 }
 

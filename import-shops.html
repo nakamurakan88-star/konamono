@@ -56,6 +56,8 @@
             <option value="20">20件</option>
             <option value="50">50件</option>
             <option value="100" selected>100件</option>
+            <option value="500">500件（複数回リクエスト）</option>
+            <option value="1000">1000件（複数回リクエスト）</option>
           </select>
         </div>
         <div class="import-form-row">
@@ -69,6 +71,16 @@
         </div>
         <div class="import-form-actions">
           <button id="search-btn" class="btn btn-primary" onclick="searchShops()">🔍 検索</button>
+        </div>
+        <!-- 取得進捗バー（500件・1000件選択時に表示） -->
+        <div id="fetch-progress-wrap" class="import-progress-wrap" style="display:none;">
+          <div class="import-progress-label">
+            <span id="fetch-progress-text">取得中...</span>
+            <span id="fetch-progress-pct">0%</span>
+          </div>
+          <div class="import-progress-bar-bg">
+            <div id="fetch-progress-bar" class="import-progress-bar" style="width:0%;"></div>
+          </div>
         </div>
       </div>
     </section>

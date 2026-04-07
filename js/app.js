@@ -77,7 +77,7 @@ async function loadRanking() {
 
   const { data: shops, error } = await supabaseClient
     .from('shops')
-    .select('id, name, prefecture, city, image_url, reviews (overall_score)')
+    .select(`*, reviews (overall_score)`)
     .limit(20);
 
   if (error) {
@@ -93,14 +93,14 @@ async function loadRanking() {
 
   shopsWithScore.sort((a, b) => (b.avgScore || 0) - (a.avgScore || 0));
 
-  const top5 = shopsWithScore.slice(0, 5);
+  const top6 = shopsWithScore.slice(0, 6);
 
-  if (top5.length === 0) {
+  if (top6.length === 0) {
     list.innerHTML = '<div class="empty-state"><div class="icon">🍳</div><p>まだ店舗が登録されていません</p></div>';
     return;
   }
 
-  list.innerHTML = top5.map((shop, i) => createRankingCard(shop, i + 1)).join('');
+  list.innerHTML = top6.map((shop, i) => createRankingCard(shop, i + 1)).join('');
 }
 
 async function loadNewShops() {
@@ -165,18 +165,35 @@ function createShopCard(shop, rank) {
 
 
 function createRankingCard(shop, rank) {
-  const imgHtml = shop.image_url
-    ? `<img src="${shop.image_url}" alt="${shop.name}" loading="lazy">`
-    : '🥞';
-  const location = [shop.prefecture, shop.city].filter(Boolean).join('');
+  const rankClass = rank <= 3 ? `rank-${rank}-card` : '';
+  const rankNumClass = rank <= 3 ? `rank-${rank}` : '';
+
+  const scoreText = shop.avgScore !== null && shop.avgScore !== undefined
+    ? (Math.round(shop.avgScore * 10) / 10).toFixed(1)
+    : null;
+  const scoreHtml = scoreText
+    ? `<div class="ranking-card-score">${scoreText}</div><div class="ranking-card-score-label">点</div>`
+    : `<div class="ranking-card-score score-none">-</div><div class="ranking-card-score-label">未評価</div>`;
+
+  const styleTags = [
+    shop.style ? `<span class="tag tag-style">${shop.style}</span>` : '',
+    shop.cooking_style ? `<span class="tag tag-cooking">${shop.cooking_style}</span>` : '',
+    shop.takeout_available ? '<span class="tag tag-takeout">持ち帰り可</span>' : ''
+  ].join('');
 
   return `
-    <div class="ranking-grid-card" onclick="location.href='shop-detail.html?id=${shop.id}'">
-      <div class="ranking-grid-badge">${rank}</div>
-      <div class="ranking-grid-img">${imgHtml}</div>
-      <div class="ranking-grid-body">
-        <div class="ranking-grid-name">${shop.name}</div>
-        <div class="ranking-grid-location">${location}</div>
+    <div class="ranking-card ${rankClass}" onclick="location.href='shop-detail.html?id=${shop.id}'">
+      <div class="ranking-card-rank ${rankNumClass}">${rank}</div>
+      <div class="ranking-card-body">
+        <div class="ranking-card-name">${shop.name}</div>
+        <div class="ranking-card-location">📍 ${shop.prefecture}${shop.city ? ' ' + shop.city : ''}</div>
+        <div class="ranking-card-meta">
+          ${styleTags}
+          <span class="ranking-card-review-count">📝 ${shop.reviewCount}件のレビュー</span>
+        </div>
+      </div>
+      <div class="ranking-card-score-area">
+        ${scoreHtml}
       </div>
     </div>
   `;

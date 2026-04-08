@@ -2227,3 +2227,30 @@ a:hover {
     font-size: 12px;
   }
 }
+
+/* ============================================
+   ユーザープロフィールリンク共通スタイル
+   ============================================ */
+
+/* レビュー内のユーザー名リンク */
+.review-user-link {
+  color: #e65100;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.2s;
+}
+
+.review-user-link:hover {
+  color: #ff8f00;
+  text-decoration: underline;
+}
+
+/* shop-detail レビューカード内 */
+.review-card-v2-user .review-user-link {
+  font-size: 14px;
+}
+
+/* トップページ レビューフィード内 */
+.review-feed-top .review-user-link {
+  font-size: 13px;
+}

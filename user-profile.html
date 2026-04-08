@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ユーザープロフィール - お好み焼きDB</title>
+  <link rel="icon" href="images/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <a href="index.html">
+          <img src="images/icon.svg" alt="" class="logo-icon">
+          お好み焼きDB
+        </a>
+      </div>
+      <nav class="nav" id="nav">
+        <a href="shops.html">店舗一覧</a>
+        <a href="shop-request.html" id="nav-request" style="display:none;">店舗登録申請</a>
+        <a href="profile.html" id="nav-profile" style="display:none;">マイページ</a>
+        <a href="login.html" class="nav-register" id="nav-register">新規登録</a>
+        <a href="login.html" class="nav-login" id="nav-auth">ログイン</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- ユーザーが見つからない場合 -->
+    <div id="user-not-found" style="display:none;">
+      <div class="empty-state">
+        <div class="icon">👤</div>
+        <p>ユーザーが見つかりませんでした。</p>
+        <a href="index.html" class="btn btn-primary" style="margin-top:16px;">トップへ戻る</a>
+      </div>
+    </div>
+
+    <!-- プロフィール本体 -->
+    <div id="profile-body" style="display:none;">
+
+      <!-- ① ユーザーヘッダー -->
+      <div class="prof-header">
+        <div class="prof-avatar-wrap">
+          <div class="prof-avatar" id="prof-avatar">👤</div>
+        </div>
+        <div class="prof-info">
+          <h1 class="prof-username" id="prof-username">読み込み中...</h1>
+          <div class="prof-stats-row">
+            <div class="prof-stat-item">
+              <div class="prof-stat-num" id="stat-review-count">—</div>
+              <div class="prof-stat-lbl">レビュー数</div>
+            </div>
+            <div class="prof-stat-item">
+              <div class="prof-stat-num" id="stat-shop-count">—</div>
+              <div class="prof-stat-lbl">訪問店舗数</div>
+            </div>
+            <div class="prof-stat-item">
+              <div class="prof-stat-num" id="stat-avg-score">—</div>
+              <div class="prof-stat-lbl">平均点</div>
+            </div>
+            <div class="prof-stat-item">
+              <div class="prof-stat-num prof-stat-date" id="stat-last-review">—</div>
+              <div class="prof-stat-lbl">最終レビュー</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ② 高評価の店 -->
+      <section class="prof-section">
+        <h2 class="prof-section-title">⭐ 高評価のお店</h2>
+        <div class="prof-card-grid" id="top-rated-shops">
+          <div class="loading">読み込み中</div>
+        </div>
+      </section>
+
+      <!-- ③ よく行く店 -->
+      <section class="prof-section">
+        <h2 class="prof-section-title">🏠 よく行くお店</h2>
+        <div class="prof-card-grid" id="frequent-shops">
+          <div class="loading">読み込み中</div>
+        </div>
+      </section>
+
+      <!-- ④ 都道府県別訪問分布 -->
+      <section class="prof-section">
+        <h2 class="prof-section-title">🗾 都道府県別レビュー分布</h2>
+        <div class="prof-pref-chart" id="pref-chart">
+          <div class="loading">読み込み中</div>
+        </div>
+      </section>
+
+      <!-- ⑤ レビュー一覧 -->
+      <section class="prof-section">
+        <h2 class="prof-section-title">📝 レビュー一覧</h2>
+        <div id="review-list-area">
+          <div class="loading">読み込み中</div>
+        </div>
+        <div id="review-list-more" style="text-align:center; margin-top:16px; display:none;">
+          <button class="btn btn-secondary" id="load-more-btn" onclick="loadMoreReviews()">
+            さらに読み込む
+          </button>
+        </div>
+      </section>
+
+    </div><!-- /profile-body -->
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 お好み焼きDB. All rights reserved.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/user-profile.js"></script>
+</body>
+</html>

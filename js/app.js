@@ -191,7 +191,7 @@ async function loadRecentReviews() {
 
   const { data: reviews, error } = await supabaseClient
     .from('reviews')
-    .select('id, overall_score, comment, created_at, shop_id, shops(name), profiles(username)')
+    .select('id, overall_score, comment, created_at, shop_id, user_id, shops(name), profiles(id, username)')
     .order('created_at', { ascending: false })
     .limit(5);
 
@@ -209,22 +209,27 @@ async function loadRecentReviews() {
 }
 
 function createReviewCard(review) {
-  const shopName  = review.shops?.name    || '不明な店舗';
-  const username  = review.profiles?.username || '匿名ユーザー';
-  const shopId    = review.shop_id;
-  const score     = review.overall_score ?? '-';
+  const shopName   = review.shops?.name    || '不明な店舗';
+  const username   = review.profiles?.username || '匿名ユーザー';
+  const userId     = review.profiles?.id || review.user_id;
+  const shopId     = review.shop_id;
+  const score      = review.overall_score ?? '-';
   const rawComment = review.comment || '';
-  const comment   = rawComment.length > 50
+  const comment    = rawComment.length > 50
     ? rawComment.slice(0, 50) + '...'
     : rawComment || 'コメントなし';
   const date = review.created_at
     ? new Date(review.created_at).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' })
     : '';
 
+  const userLink = userId
+    ? `<a href="user-profile.html?id=${userId}" class="review-user-link">👤 ${username}</a>`
+    : `<span>👤 ${username}</span>`;
+
   return `
     <div class="review-feed-card">
       <div class="review-feed-top">
-        <span class="review-feed-user">👤 ${username}</span>
+        ${userLink}
         <span class="review-feed-arrow">›</span>
         <a href="shop-detail.html?id=${shopId}" class="review-feed-shop">${shopName}</a>
         <span class="review-feed-score">${score}<span class="review-feed-score-unit">点</span></span>

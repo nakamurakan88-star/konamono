@@ -340,7 +340,7 @@ async function loadReviews() {
 
   const { data: reviews, error } = await supabaseClient
     .from('reviews')
-    .select(`*, profiles (username)`)
+    .select(`*, profiles (id, username)`)
     .eq('shop_id', currentShopId)
     .order('created_at', { ascending: false });
 
@@ -372,12 +372,16 @@ async function loadReviews() {
       ? `<div class="review-card-v2-images">${imageUrls.map(url => `<img src="${url}" alt="レビュー写真" onclick="window.open('${url}','_blank')">`).join('')}</div>`
       : '';
 
-    const username = review.profiles?.username || '匿名ユーザー';
+    const username  = review.profiles?.username || '匿名ユーザー';
+    const userId    = review.profiles?.id || review.user_id;
+    const userLink  = userId
+      ? `<a href="user-profile.html?id=${userId}" class="review-user-link">👤 ${username}</a>`
+      : `<span>👤 ${username}</span>`;
 
     return `
       <div class="review-card-v2">
         <div class="review-card-v2-header">
-          <div class="review-card-v2-user">👤 ${username}</div>
+          <div class="review-card-v2-user">${userLink}</div>
           <div class="review-card-v2-score">
             ${review.overall_score}<span class="review-card-v2-score-unit">点</span>
           </div>

@@ -86,49 +86,135 @@ async function checkReviewEligibility() {
 function createReviewForm() {
   return `
     <div class="review-form">
-      <div class="form-group">
-        <label>総合評価（1〜100点）</label>
-        <input type="range" id="overall-score" min="1" max="100" value="50"
-               oninput="document.getElementById('score-display').textContent=this.value">
-        <div style="text-align:center; font-size:24px; font-weight:bold; color:#ff8f00; margin-top:4px;">
-          <span id="score-display">50</span>点
-        </div>
+      <!-- 総合スコア自動表示 -->
+      <div class="overall-score-display">
+        <div class="overall-score-label">現在のスコア</div>
+        <div class="overall-score-value" id="overall-score-display">0</div>
+        <div class="overall-score-unit">点</div>
       </div>
 
-      <div class="form-group">
-        <label>生地 ★</label>
-        <div class="star-rating" data-target="dough-score">
+      <!-- 評価項目セクション -->
+      <div class="score-section-title">📊 評価項目（各1〜5点）</div>
+
+      <div class="form-group score-input-row">
+        <label>麺（そば/うどん）<br><span class="label-sub">パリパリ度・食感</span></label>
+        <div class="star-rating" data-target="noodle-score">
           <span class="star" data-value="1">★</span>
           <span class="star" data-value="2">★</span>
           <span class="star" data-value="3">★</span>
           <span class="star" data-value="4">★</span>
           <span class="star" data-value="5">★</span>
+          <span class="star-value" id="noodle-value">0</span>
         </div>
-        <input type="hidden" id="dough-score" value="0">
+        <input type="hidden" id="noodle-score" value="0">
       </div>
 
-      <div class="form-group">
-        <label>具材 ★</label>
-        <div class="star-rating" data-target="ingredients-score">
+      <div class="form-group score-input-row">
+        <label>キャベツ<br><span class="label-sub">蒸し具合・甘み</span></label>
+        <div class="star-rating" data-target="cabbage-score">
           <span class="star" data-value="1">★</span>
           <span class="star" data-value="2">★</span>
           <span class="star" data-value="3">★</span>
           <span class="star" data-value="4">★</span>
           <span class="star" data-value="5">★</span>
+          <span class="star-value" id="cabbage-value">0</span>
         </div>
-        <input type="hidden" id="ingredients-score" value="0">
+        <input type="hidden" id="cabbage-score" value="0">
       </div>
 
-      <div class="form-group">
-        <label>ソース ★</label>
+      <div class="form-group score-input-row">
+        <label>玉子<br><span class="label-sub">半熟具合・焼き加減</span></label>
+        <div class="star-rating" data-target="egg-score">
+          <span class="star" data-value="1">★</span>
+          <span class="star" data-value="2">★</span>
+          <span class="star" data-value="3">★</span>
+          <span class="star" data-value="4">★</span>
+          <span class="star" data-value="5">★</span>
+          <span class="star-value" id="egg-value">0</span>
+        </div>
+        <input type="hidden" id="egg-score" value="0">
+      </div>
+
+      <div class="form-group score-input-row">
+        <label>ソース<br><span class="label-sub">味のバランス・量</span></label>
         <div class="star-rating" data-target="sauce-score">
           <span class="star" data-value="1">★</span>
           <span class="star" data-value="2">★</span>
           <span class="star" data-value="3">★</span>
           <span class="star" data-value="4">★</span>
           <span class="star" data-value="5">★</span>
+          <span class="star-value" id="sauce-value">0</span>
         </div>
         <input type="hidden" id="sauce-score" value="0">
+      </div>
+
+      <div class="form-group score-input-row">
+        <label>全体のバランス<br><span class="label-sub">層の一体感</span></label>
+        <div class="star-rating" data-target="balance-score">
+          <span class="star" data-value="1">★</span>
+          <span class="star" data-value="2">★</span>
+          <span class="star" data-value="3">★</span>
+          <span class="star" data-value="4">★</span>
+          <span class="star" data-value="5">★</span>
+          <span class="star-value" id="balance-value">0</span>
+        </div>
+        <input type="hidden" id="balance-score" value="0">
+      </div>
+
+      <div class="form-group score-input-row">
+        <label>鉄板体験<br><span class="label-sub">熱々提供・ヘラ食べ</span></label>
+        <div class="star-rating" data-target="teppan-score">
+          <span class="star" data-value="1">★</span>
+          <span class="star" data-value="2">★</span>
+          <span class="star" data-value="3">★</span>
+          <span class="star" data-value="4">★</span>
+          <span class="star" data-value="5">★</span>
+          <span class="star-value" id="teppan-value">0</span>
+        </div>
+        <input type="hidden" id="teppan-score" value="0">
+      </div>
+
+      <!-- 注文内容セクション -->
+      <div class="score-section-title" style="margin-top:30px;">🍽️ 注文内容</div>
+
+      <div class="form-group">
+        <label>注文メニュー</label>
+        <select id="order-menu">
+          <option value="">選択してください</option>
+          <option value="肉玉そば">肉玉そば</option>
+          <option value="肉玉うどん">肉玉うどん</option>
+          <option value="肉玉そばダブル">肉玉そばダブル</option>
+          <option value="肉玉うどんダブル">肉玉うどんダブル</option>
+          <option value="スペシャル">スペシャル</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>トッピング（複数選択可）</label>
+        <div class="toppings-grid">
+          <label class="topping-item"><input type="checkbox" name="topping" value="ねぎ"> ねぎ</label>
+          <label class="topping-item"><input type="checkbox" name="topping" value="大葉"> 大葉</label>
+          <label class="topping-item"><input type="checkbox" name="topping" value="イカ天"> イカ天</label>
+          <label class="topping-item"><input type="checkbox" name="topping" value="もち"> もち</label>
+          <label class="topping-item"><input type="checkbox" name="topping" value="チーズ"> チーズ</label>
+          <label class="topping-item"><input type="checkbox" name="topping" value="キムチ"> キムチ</label>
+          <label class="topping-item"><input type="checkbox" name="topping" value="追加そば"> 追加そば</label>
+          <label class="topping-item"><input type="checkbox" name="topping" value="えび"> えび</label>
+          <label class="topping-item"><input type="checkbox" name="topping" value="牡蠣"> 牡蠣</label>
+          <label class="topping-item"><input type="checkbox" name="topping" value="その他"> その他</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>食べ方</label>
+        <select id="eating-style">
+          <option value="">選択してください</option>
+          <option value="鉄板でヘラ食べ">鉄板でヘラ食べ</option>
+          <option value="鉄板で箸食べ">鉄板で箸食べ</option>
+          <option value="皿で食べた">皿で食べた</option>
+          <option value="テイクアウト">テイクアウト</option>
+        </select>
       </div>
 
       <div class="form-group">
@@ -378,6 +464,28 @@ async function loadReviews() {
       ? `<a href="user-profile.html?id=${userId}" class="review-user-link">👤 ${username}</a>`
       : `<span>👤 ${username}</span>`;
 
+    // 広島風スコア表示（旧カラムがある場合は表示、なければ新カラムを表示）
+    const hasOldFormat = review.dough_score || review.ingredients_score;
+    const scoreHtml = hasOldFormat
+      ? `<span>生地: ${stars(review.dough_score)}</span>
+         <span>具材: ${stars(review.ingredients_score)}</span>
+         <span>ソース: ${stars(review.sauce_score)}</span>`
+      : `<span>麺: ${stars(review.noodle_score)}</span>
+         <span>キャベツ: ${stars(review.cabbage_score)}</span>
+         <span>玉子: ${stars(review.egg_score)}</span>
+         <span>ソース: ${stars(review.sauce_score)}</span>
+         <span>バランス: ${stars(review.balance_score)}</span>
+         <span>鉄板: ${stars(review.teppan_score)}</span>`;
+
+    // 注文情報表示
+    const orderInfo = [];
+    if (review.order_menu) orderInfo.push(`📋 ${review.order_menu}`);
+    if (review.toppings && review.toppings.length > 0) orderInfo.push(`🍴 ${review.toppings.join(', ')}`);
+    if (review.eating_style) orderInfo.push(`🍽️ ${review.eating_style}`);
+    const orderHtml = orderInfo.length > 0
+      ? `<div class="review-order-info">${orderInfo.join(' / ')}</div>`
+      : '';
+
     return `
       <div class="review-card-v2">
         <div class="review-card-v2-header">
@@ -388,11 +496,10 @@ async function loadReviews() {
           <div class="review-card-v2-date">${dateStr}</div>
         </div>
         <div class="review-card-v2-stars">
-          <span>生地: ${stars(review.dough_score)}</span>
-          <span>具材: ${stars(review.ingredients_score)}</span>
-          <span>ソース: ${stars(review.sauce_score)}</span>
+          ${scoreHtml}
           ${visitStr ? `<span style="color:#9e9e9e; font-size:12px;">${visitStr}</span>` : ''}
         </div>
+        ${orderHtml}
         ${review.comment ? `<div class="review-card-v2-comment">${review.comment}</div>` : ''}
         ${imagesHtml}
       </div>
@@ -400,17 +507,20 @@ async function loadReviews() {
   }).join('');
 }
 
-// --- 星評価 ---
+// --- 星評価 + 総合スコア自動計算 ---
 function setupStarRatings() {
   document.querySelectorAll('.star-rating').forEach(rating => {
     const targetId = rating.dataset.target;
     const stars = rating.querySelectorAll('.star');
+    const valueDisplay = rating.querySelector('.star-value');
 
     stars.forEach(star => {
       star.addEventListener('click', () => {
         const value = parseInt(star.dataset.value);
         document.getElementById(targetId).value = value;
         stars.forEach(s => s.classList.toggle('active', parseInt(s.dataset.value) <= value));
+        if (valueDisplay) valueDisplay.textContent = value;
+        updateOverallScore();
       });
       star.addEventListener('mouseenter', () => {
         const value = parseInt(star.dataset.value);
@@ -425,6 +535,23 @@ function setupStarRatings() {
   });
 }
 
+function updateOverallScore() {
+  const noodle = parseInt(document.getElementById('noodle-score')?.value) || 0;
+  const cabbage = parseInt(document.getElementById('cabbage-score')?.value) || 0;
+  const egg = parseInt(document.getElementById('egg-score')?.value) || 0;
+  const sauce = parseInt(document.getElementById('sauce-score')?.value) || 0;
+  const balance = parseInt(document.getElementById('balance-score')?.value) || 0;
+  const teppan = parseInt(document.getElementById('teppan-score')?.value) || 0;
+  
+  const total = noodle + cabbage + egg + sauce + balance + teppan;
+  const overallScore = Math.round((total / 30) * 1000) / 10;
+  
+  const display = document.getElementById('overall-score-display');
+  if (display) {
+    display.textContent = overallScore.toFixed(1);
+  }
+}
+
 // --- レビュー投稿 ---
 async function submitReview() {
   if (!currentUser) {
@@ -437,10 +564,26 @@ async function submitReview() {
   btn.disabled = true;
   btn.textContent = '投稿中...';
 
-  const overallScore = parseInt(document.getElementById('overall-score').value);
-  const doughScore = parseInt(document.getElementById('dough-score').value) || null;
-  const ingredientsScore = parseInt(document.getElementById('ingredients-score').value) || null;
+  // 広島風専用スコア取得
+  const noodleScore = parseInt(document.getElementById('noodle-score').value) || null;
+  const cabbageScore = parseInt(document.getElementById('cabbage-score').value) || null;
+  const eggScore = parseInt(document.getElementById('egg-score').value) || null;
   const sauceScore = parseInt(document.getElementById('sauce-score').value) || null;
+  const balanceScore = parseInt(document.getElementById('balance-score').value) || null;
+  const teppanScore = parseInt(document.getElementById('teppan-score').value) || null;
+
+  // 総合スコア自動計算
+  const total = (noodleScore || 0) + (cabbageScore || 0) + (eggScore || 0) + (sauceScore || 0) + (balanceScore || 0) + (teppanScore || 0);
+  const overallScore = Math.round((total / 30) * 1000) / 10;
+
+  // 注文情報取得
+  const orderMenu = document.getElementById('order-menu').value || null;
+  const eatingStyle = document.getElementById('eating-style').value || null;
+  
+  // トッピング配列取得
+  const toppingCheckboxes = document.querySelectorAll('input[name="topping"]:checked');
+  const toppings = Array.from(toppingCheckboxes).map(cb => cb.value);
+
   const visitedAt = document.getElementById('visited-at').value || null;
   const comment = document.getElementById('comment').value;
 
@@ -456,9 +599,15 @@ async function submitReview() {
       user_id: currentUser.id,
       shop_id: parseInt(currentShopId),
       overall_score: overallScore,
-      dough_score: doughScore,
-      ingredients_score: ingredientsScore,
+      noodle_score: noodleScore,
+      cabbage_score: cabbageScore,
+      egg_score: eggScore,
       sauce_score: sauceScore,
+      balance_score: balanceScore,
+      teppan_score: teppanScore,
+      order_menu: orderMenu,
+      toppings: toppings.length > 0 ? toppings : null,
+      eating_style: eatingStyle,
       visited_at: visitedAt,
       comment: comment,
       image_urls: imageUrls

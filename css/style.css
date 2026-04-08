@@ -2460,3 +2460,187 @@ a:hover {
     text-align: center;
   }
 }
+
+/* ================================================
+   広島風お好み焼きレビューフォーム専用スタイル
+   ================================================ */
+
+/* 総合スコア表示（大きく目立つ） */
+.overall-score-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, #ff8f00 0%, #ff6f00 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(255, 143, 0, 0.3);
+}
+
+.overall-score-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.overall-score-value {
+  font-size: 48px;
+  font-weight: bold;
+  color: #fff;
+  line-height: 1;
+}
+
+.overall-score-unit {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* セクションタイトル */
+.score-section-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #424242;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #ff8f00;
+}
+
+/* スコア入力行（横並び） */
+.score-input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.score-input-row label {
+  flex: 0 0 180px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #424242;
+  margin-bottom: 0;
+}
+
+.score-input-row .label-sub {
+  display: block;
+  font-size: 12px;
+  font-weight: normal;
+  color: #757575;
+  margin-top: 2px;
+}
+
+.score-input-row .star-rating {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.star-rating .star {
+  font-size: 28px;
+  cursor: pointer;
+  color: #ddd;
+  transition: color 0.2s;
+  user-select: none;
+}
+
+.star-rating .star:hover,
+.star-rating .star.active {
+  color: #ff8f00;
+}
+
+.star-value {
+  margin-left: 12px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #ff8f00;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* トッピンググリッド */
+.toppings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.topping-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.topping-item:hover {
+  background: #fff3e0;
+  border-color: #ff8f00;
+}
+
+.topping-item input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #ff8f00;
+}
+
+/* 注文情報表示（レビューカード内） */
+.review-order-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 13px;
+  color: #616161;
+  border-top: 1px dashed #e0e0e0;
+  margin-top: 8px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .overall-score-value {
+    font-size: 36px;
+  }
+  
+  .overall-score-label,
+  .overall-score-unit {
+    font-size: 14px;
+  }
+  
+  .score-input-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 16px 0;
+  }
+  
+  .score-input-row label {
+    flex: none;
+  }
+  
+  .score-input-row .star-rating {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .star-rating .star {
+    font-size: 32px;
+  }
+  
+  .toppings-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .review-order-info {
+    flex-direction: column;
+    gap: 6px;
+  }
+}

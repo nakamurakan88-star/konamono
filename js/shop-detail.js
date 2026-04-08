@@ -440,9 +440,21 @@ async function loadReviews() {
     return;
   }
 
-  const stars = (score) => {
-    if (!score) return '<span style="color:#ccc">未評価</span>';
-    return '<span style="color:#ff8f00">' + '★'.repeat(score) + '</span><span style="color:#ddd">' + '★'.repeat(5 - score) + '</span>';
+  // 店舗全体の平均スコア計算（統計セクション用）
+  calculateAndDisplayShopStats(reviews);
+
+  const createBarGraph = (label, score) => {
+    if (!score || score === 0) return '';
+    const percentage = (score / 5) * 100;
+    return `
+      <div class="score-bar-row">
+        <div class="score-bar-label">${label}</div>
+        <div class="score-bar-container">
+          <div class="score-bar-fill" style="width: ${percentage}%"></div>
+        </div>
+        <div class="score-bar-value">${score}</div>
+      </div>
+    `;
   };
 
   container.innerHTML = reviews.map(review => {
@@ -464,47 +476,117 @@ async function loadReviews() {
       ? `<a href="user-profile.html?id=${userId}" class="review-user-link">👤 ${username}</a>`
       : `<span>👤 ${username}</span>`;
 
-    // 広島風スコア表示（旧カラムがある場合は表示、なければ新カラムを表示）
+    // 広島風スコア表示（旧カラムがある場合は星表示、なければ横棒グラフ）
     const hasOldFormat = review.dough_score || review.ingredients_score;
-    const scoreHtml = hasOldFormat
-      ? `<span>生地: ${stars(review.dough_score)}</span>
-         <span>具材: ${stars(review.ingredients_score)}</span>
-         <span>ソース: ${stars(review.sauce_score)}</span>`
-      : `<span>麺: ${stars(review.noodle_score)}</span>
-         <span>キャベツ: ${stars(review.cabbage_score)}</span>
-         <span>玉子: ${stars(review.egg_score)}</span>
-         <span>ソース: ${stars(review.sauce_score)}</span>
-         <span>バランス: ${stars(review.balance_score)}</span>
-         <span>鉄板: ${stars(review.teppan_score)}</span>`;
-
-    // 注文情報表示
-    const orderInfo = [];
-    if (review.order_menu) orderInfo.push(`📋 ${review.order_menu}`);
-    if (review.toppings && review.toppings.length > 0) orderInfo.push(`🍴 ${review.toppings.join(', ')}`);
-    if (review.eating_style) orderInfo.push(`🍽️ ${review.eating_style}`);
-    const orderHtml = orderInfo.length > 0
-      ? `<div class="review-order-info">${orderInfo.join(' / ')}</div>`
-      : '';
-
-    return `
-      <div class="review-card-v2">
-        <div class="review-card-v2-header">
-          <div class="review-card-v2-user">${userLink}</div>
-          <div class="review-card-v2-score">
-            ${review.overall_score}<span class="review-card-v2-score-unit">点</span>
-          </div>
-          <div class="review-card-v2-date">${dateStr}</div>
-        </div>
+    let scoreHtml = '';
+    
+    if (hasOldFormat) {
+      // 旧形式：星表示
+      const stars = (score) => {
+        if (!score) return '<span style="color:#ccc">未評価</span>';
+        return '<span style="color:#ff8f00">' + '★'.repeat(score) + '</span><span style="color:#ddd">' + '★'.repeat(5 - score) + '</span>';
+      };
+      scoreHtml = `
         <div class="review-card-v2-stars">
-          ${scoreHtml}
+          <span>生地: ${stars(review.dough_score)}</span>
+          <span>具材: ${stars(review.ingredients_score)}</span>
+          <span>ソース: ${stars(review.sauce_score)}</span>
           ${visitStr ? `<span style="color:#9e9e9e; font-size:12px;">${visitStr}</span>` : ''}
         </div>
-        ${orderHtml}
-        ${review.comment ? `<div class="review-card-v2-comment">${review.comment}</div>` : ''}
+      `;
+    } else {
+      // 新形式：横棒グラフ
+      scoreHtml = `
+        <div class="review-score-bars">
+          ${createBarGraph('麺', review.noodle_score)}
+          ${createBarGraph('キャベツ', review.cabbage_score)}
+          ${createBarGraph('玉子', review.egg_score)}
+          ${createBarGraph('ソース', review.sauce_score)}
+          ${createBarGraph('バランス', review.balance_score)}
+          ${createBarGraph('鉄板', review.teppan_score)}
+        </div>
+        ${visitStr ? `<div class="review-visit-date">${visitStr}</div>` : ''}
+      `;
+    }
+
+    // 注文情報バッジ
+    let orderBadgesHtml = '';
+    if (review.order_menu || review.eating_style || (review.toppings && review.toppings.length > 0)) {
+      const badges = [];
+      if (review.order_menu) badges.push(`<span class="badge badge-menu">${review.order_menu}</span>`);
+      if (review.eating_style) badges.push(`<span class="badge badge-style">${review.eating_style}</span>`);
+      if (review.toppings && review.toppings.length > 0) {
+        review.toppings.forEach(topping => {
+          badges.push(`<span class="badge badge-topping">${topping}</span>`);
+        });
+      }
+      orderBadgesHtml = `<div class="review-badges">${badges.join('')}</div>`;
+    }
+
+    return `
+      <div class="review-card-v3">
+        <div class="review-card-v3-header">
+          <div class="review-card-v3-user">${userLink}</div>
+          <div class="review-card-v3-score">
+            <span class="review-card-v3-score-value">${review.overall_score}</span>
+            <span class="review-card-v3-score-unit">点</span>
+          </div>
+        </div>
+        <div class="review-card-v3-date">${dateStr}</div>
+        ${scoreHtml}
+        ${orderBadgesHtml}
+        ${review.comment ? `<div class="review-card-v3-comment">${review.comment}</div>` : ''}
         ${imagesHtml}
       </div>
     `;
   }).join('');
+}
+
+// 店舗全体の平均スコアを計算して表示
+function calculateAndDisplayShopStats(reviews) {
+  const statsContainer = document.getElementById('shop-average-stats');
+  if (!statsContainer) return;
+
+  // 新形式のレビューのみを抽出（noodle_scoreがあるもの）
+  const newFormatReviews = reviews.filter(r => r.noodle_score);
+  
+  if (newFormatReviews.length === 0) {
+    statsContainer.style.display = 'none';
+    return;
+  }
+
+  const avgNoodle = (newFormatReviews.reduce((sum, r) => sum + (r.noodle_score || 0), 0) / newFormatReviews.length).toFixed(1);
+  const avgCabbage = (newFormatReviews.reduce((sum, r) => sum + (r.cabbage_score || 0), 0) / newFormatReviews.length).toFixed(1);
+  const avgEgg = (newFormatReviews.reduce((sum, r) => sum + (r.egg_score || 0), 0) / newFormatReviews.length).toFixed(1);
+  const avgSauce = (newFormatReviews.reduce((sum, r) => sum + (r.sauce_score || 0), 0) / newFormatReviews.length).toFixed(1);
+  const avgBalance = (newFormatReviews.reduce((sum, r) => sum + (r.balance_score || 0), 0) / newFormatReviews.length).toFixed(1);
+  const avgTeppan = (newFormatReviews.reduce((sum, r) => sum + (r.teppan_score || 0), 0) / newFormatReviews.length).toFixed(1);
+
+  const createAvgBar = (label, score) => {
+    const percentage = (score / 5) * 100;
+    return `
+      <div class="avg-score-row">
+        <div class="avg-score-label">${label}</div>
+        <div class="avg-score-bar-container">
+          <div class="avg-score-bar-fill" style="width: ${percentage}%"></div>
+        </div>
+        <div class="avg-score-value">${score}</div>
+      </div>
+    `;
+  };
+
+  statsContainer.style.display = 'block';
+  statsContainer.innerHTML = `
+    <h3 class="stats-title">📊 平均評価（${newFormatReviews.length}件のレビュー）</h3>
+    <div class="avg-score-grid">
+      ${createAvgBar('麺', avgNoodle)}
+      ${createAvgBar('キャベツ', avgCabbage)}
+      ${createAvgBar('玉子', avgEgg)}
+      ${createAvgBar('ソース', avgSauce)}
+      ${createAvgBar('バランス', avgBalance)}
+      ${createAvgBar('鉄板', avgTeppan)}
+    </div>
+  `;
 }
 
 // --- 星評価 + 総合スコア自動計算 ---

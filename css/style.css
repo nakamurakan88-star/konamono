@@ -2254,3 +2254,209 @@ a:hover {
 .review-feed-top .review-user-link {
   font-size: 13px;
 }
+
+/* ============================================
+   プロフィール編集ボタン・モーダル
+   ============================================ */
+
+/* ユーザー名行（名前 + 編集ボタン横並び） */
+.prof-username-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.prof-username-row .prof-username {
+  margin: 0;
+}
+
+/* 編集ボタン */
+.prof-edit-btn {
+  background: #fff3e0;
+  color: #e65100;
+  border: 1px solid #ffcc80;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.prof-edit-btn:hover {
+  background: #ffe0b2;
+  border-color: #ff9800;
+}
+
+/* モーダルオーバーレイ */
+.edit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+/* モーダル本体 */
+.edit-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.edit-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.edit-modal-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.edit-modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.edit-modal-close:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+/* モーダル内フォーム */
+.edit-modal .form-group {
+  padding: 0 24px;
+  margin-bottom: 18px;
+}
+
+.edit-modal .form-group:first-of-type {
+  margin-top: 20px;
+}
+
+.edit-label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+.edit-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #333;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #ff7043;
+  box-shadow: 0 0 0 3px rgba(255, 112, 67, 0.1);
+}
+
+.edit-hint {
+  font-size: 12px;
+  color: #999;
+  margin: 4px 0 0;
+}
+
+/* アバタープレビュー */
+.edit-avatar-preview-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.edit-avatar-preview {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #ffe0b2;
+  border: 2px solid #ff7043;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.edit-avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* メッセージ */
+.edit-message {
+  margin: 0 24px 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.edit-message-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.edit-message-error {
+  background: #fff3e0;
+  color: #e65100;
+  border: 1px solid #ffcc80;
+}
+
+/* モーダルフッター */
+.edit-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .prof-username-row {
+    gap: 8px;
+  }
+  .edit-modal {
+    max-width: 100%;
+    border-radius: 12px;
+  }
+  .edit-modal-footer {
+    flex-direction: column-reverse;
+  }
+  .edit-modal-footer .btn {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -1,11 +1,11 @@
 // ============================================
 // マイページ（プロフィール）用 JavaScript
-// ラーメンDB参考：レビュー一覧・高評価店・よく行く店・都道府県別分布
 // ============================================
 
 const REVIEWS_PER_PAGE = 20;
-let allReviews = [];       // ユーザーの全レビュー
-let displayedCount = 0;    // 現在表示済み件数
+let allReviews   = [];
+let displayedCount = 0;
+let currentUser  = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   await initPage();
@@ -28,7 +28,8 @@ async function initPage() {
     return;
   }
 
-  // ログイン済み：ナビ更新
+  currentUser = session.user;
+
   navAuth.textContent = 'ログアウト';
   navAuth.href = '#';
   navAuth.onclick = async (e) => {
@@ -42,15 +43,13 @@ async function initPage() {
 
   document.getElementById('profile-body').style.display = 'block';
 
-  // 並列でデータ取得
   await loadProfileData(session.user);
 }
 
 // ============================================
-// プロフィール・レビューデータを一括取得して各セクションへ
+// プロフィール・レビューデータを一括取得
 // ============================================
 async function loadProfileData(user) {
-  // --- プロフィール情報 ---
   const { data: profile } = await supabaseClient
     .from('profiles')
     .select('username, avatar_url')
@@ -59,13 +58,13 @@ async function loadProfileData(user) {
 
   const username = profile?.username || user.email?.split('@')[0] || 'ユーザー';
   document.getElementById('prof-username').textContent = username;
-  document.getElementById('prof-email').textContent    = user.email || '';
+
+  // メールアドレスは表示しない
   if (profile?.avatar_url) {
     document.getElementById('prof-avatar').innerHTML =
       `<img src="${profile.avatar_url}" alt="${username}" class="prof-avatar-img">`;
   }
 
-  // --- 全レビューを取得（店名・都道府県を join） ---
   const { data: reviews, error } = await supabaseClient
     .from('reviews')
     .select(`
@@ -83,39 +82,28 @@ async function loadProfileData(user) {
 
   allReviews = reviews;
 
-  // --- 統計 ---
   renderStats(reviews);
-
-  // --- 高評価の店 ---
   renderTopRated(reviews);
-
-  // --- よく行く店 ---
   renderFrequent(reviews);
-
-  // --- 都道府県別分布 ---
   renderPrefChart(reviews);
 
-  // --- レビュー一覧（初回分） ---
   displayedCount = 0;
   document.getElementById('review-list-area').innerHTML = '';
   loadMoreReviews();
 }
 
 // ============================================
-// 統計バッジを描画
+// 統計バッジ
 // ============================================
 function renderStats(reviews) {
   const reviewCount = reviews.length;
-  // 訪問店舗数（shop_id のユニーク数）
-  const shopIds    = new Set(reviews.map(r => r.shops?.id).filter(Boolean));
-  const shopCount  = shopIds.size;
-  // 平均点
-  const scores     = reviews.map(r => r.overall_score).filter(s => s != null);
-  const avgScore   = scores.length > 0
+  const shopIds     = new Set(reviews.map(r => r.shops?.id).filter(Boolean));
+  const shopCount   = shopIds.size;
+  const scores      = reviews.map(r => r.overall_score).filter(s => s != null);
+  const avgScore    = scores.length > 0
     ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)
     : '—';
-  // 最終レビュー日
-  const lastDate   = reviews.length > 0
+  const lastDate    = reviews.length > 0
     ? new Date(reviews[0].created_at).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' })
     : '—';
 
@@ -126,13 +114,12 @@ function renderStats(reviews) {
 }
 
 // ============================================
-// 高評価の店（overall_score 上位10件、ユニーク店舗）
+// 高評価の店（上位10件）
 // ============================================
 function renderTopRated(reviews) {
-  const container = document.getElementById('top-rated-shops');
-
-  // 店舗ごとに最高スコアのレビューを抽出
+  const container  = document.getElementById('top-rated-shops');
   const bestByShop = new Map();
+
   reviews.forEach(r => {
     const sid = r.shops?.id;
     if (!sid) return;
@@ -150,24 +137,20 @@ function renderTopRated(reviews) {
     container.innerHTML = '<p class="prof-empty">まだレビューがありません</p>';
     return;
   }
-
   container.innerHTML = top10.map(r => profShopCard(r, r.overall_score + '点')).join('');
 }
 
 // ============================================
-// よく行く店（同一店舗のレビュー回数が多い順 上位10件）
+// よく行く店（上位10件）
 // ============================================
 function renderFrequent(reviews) {
   const container = document.getElementById('frequent-shops');
+  const countMap  = new Map();
 
-  // 店舗ごとのレビュー回数をカウント
-  const countMap = new Map(); // shopId -> { count, latestReview }
   reviews.forEach(r => {
     const sid = r.shops?.id;
     if (!sid) return;
-    if (!countMap.has(sid)) {
-      countMap.set(sid, { count: 0, review: r });
-    }
+    if (!countMap.has(sid)) countMap.set(sid, { count: 0, review: r });
     countMap.get(sid).count++;
   });
 
@@ -180,7 +163,6 @@ function renderFrequent(reviews) {
     container.innerHTML = '<p class="prof-empty">まだレビューがありません</p>';
     return;
   }
-
   container.innerHTML = top10.map(r => profShopCard(r, r.visitCount + '回')).join('');
 }
 
@@ -189,9 +171,8 @@ function renderFrequent(reviews) {
 // ============================================
 function renderPrefChart(reviews) {
   const container = document.getElementById('pref-chart');
+  const prefShops = new Map();
 
-  // 都道府県ごとのユニーク店舗数をカウント
-  const prefShops = new Map(); // pref -> Set<shopId>
   reviews.forEach(r => {
     const pref = r.shops?.prefecture;
     const sid  = r.shops?.id;
@@ -205,7 +186,6 @@ function renderPrefChart(reviews) {
     return;
   }
 
-  // 件数でソート
   const sorted = [...prefShops.entries()]
     .map(([pref, shops]) => ({ pref, count: shops.size }))
     .sort((a, b) => b.count - a.count);
@@ -227,7 +207,7 @@ function renderPrefChart(reviews) {
 }
 
 // ============================================
-// 店舗カード（高評価・よく行く店 共通）
+// 店舗カード
 // ============================================
 function profShopCard(review, badge) {
   const shop    = review.shops || {};
@@ -251,8 +231,7 @@ function profShopCard(review, badge) {
 function loadMoreReviews() {
   const container = document.getElementById('review-list-area');
   const moreWrap  = document.getElementById('review-list-more');
-
-  const slice = allReviews.slice(displayedCount, displayedCount + REVIEWS_PER_PAGE);
+  const slice     = allReviews.slice(displayedCount, displayedCount + REVIEWS_PER_PAGE);
   displayedCount += slice.length;
 
   if (slice.length === 0 && displayedCount === 0) {
@@ -267,13 +246,12 @@ function loadMoreReviews() {
     container.appendChild(el);
   });
 
-  // 「もっと読む」ボタン表示制御
   moreWrap.style.display = (displayedCount < allReviews.length) ? 'block' : 'none';
 }
 
 function buildReviewCard(r) {
-  const shop    = r.shops || {};
-  const score   = r.overall_score ?? '—';
+  const shop       = r.shops || {};
+  const score      = r.overall_score ?? '—';
   const scoreClass = r.overall_score >= 75 ? 'score-high'
     : r.overall_score >= 50 ? 'score-mid'
     : r.overall_score ? 'score-low' : 'score-none';
@@ -304,4 +282,112 @@ function buildReviewCard(r) {
     ${imgHtml}
     <div class="prof-review-date">${date}</div>
   `;
+}
+
+// ============================================
+// プロフィール編集モーダル
+// ============================================
+function openEditModal() {
+  // 現在の値をフォームに反映
+  const username  = document.getElementById('prof-username').textContent;
+  const avatarImg = document.querySelector('#prof-avatar img');
+  const avatarUrl = avatarImg ? avatarImg.src : '';
+
+  document.getElementById('edit-username').value   = username;
+  document.getElementById('edit-avatar-url').value = avatarUrl;
+
+  // プレビューを現在のアバターに設定
+  const preview = document.getElementById('edit-avatar-preview');
+  if (avatarUrl) {
+    preview.innerHTML = `<img src="${avatarUrl}" alt="プレビュー" onerror="this.parentNode.textContent='👤'">`;
+  } else {
+    preview.textContent = '👤';
+  }
+
+  hideEditMessage();
+  document.getElementById('edit-modal-overlay').style.display = 'flex';
+  document.getElementById('edit-username').focus();
+}
+
+function closeEditModal(event) {
+  // オーバーレイ背景クリックで閉じる（モーダル内クリックは無視）
+  if (event && event.target !== document.getElementById('edit-modal-overlay')) return;
+  document.getElementById('edit-modal-overlay').style.display = 'none';
+}
+
+function previewAvatar() {
+  const url     = document.getElementById('edit-avatar-url').value.trim();
+  const preview = document.getElementById('edit-avatar-preview');
+
+  if (!url) {
+    preview.textContent = '👤';
+    return;
+  }
+  preview.innerHTML = `<img src="${url}" alt="プレビュー" onerror="this.parentNode.textContent='👤'">`;
+}
+
+function showEditMessage(text, type) {
+  const el = document.getElementById('edit-message');
+  el.textContent = text;
+  el.className   = `edit-message edit-message-${type}`;
+  el.style.display = 'block';
+}
+
+function hideEditMessage() {
+  document.getElementById('edit-message').style.display = 'none';
+}
+
+async function saveProfile() {
+  if (!currentUser) return;
+
+  const username  = document.getElementById('edit-username').value.trim();
+  const avatarUrl = document.getElementById('edit-avatar-url').value.trim();
+
+  if (!username) {
+    showEditMessage('ユーザー名を入力してください', 'error');
+    return;
+  }
+  if (username.length > 30) {
+    showEditMessage('ユーザー名は30文字以内で入力してください', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('edit-save-btn');
+  btn.disabled    = true;
+  btn.textContent = '保存中...';
+
+  try {
+    const { error } = await supabaseClient
+      .from('profiles')
+      .update({
+        username:   username,
+        avatar_url: avatarUrl || null
+      })
+      .eq('id', currentUser.id);
+
+    if (error) throw error;
+
+    // 画面に即時反映
+    document.getElementById('prof-username').textContent = username;
+
+    const avatarEl = document.getElementById('prof-avatar');
+    if (avatarUrl) {
+      avatarEl.innerHTML = `<img src="${avatarUrl}" alt="${username}" class="prof-avatar-img" onerror="this.parentNode.textContent='👤'">`;
+    } else {
+      avatarEl.textContent = '👤';
+    }
+
+    showEditMessage('✅ 保存しました', 'success');
+
+    // 1.5秒後に自動でモーダルを閉じる
+    setTimeout(() => {
+      document.getElementById('edit-modal-overlay').style.display = 'none';
+    }, 1500);
+
+  } catch (err) {
+    showEditMessage('保存に失敗しました: ' + err.message, 'error');
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = '保存する';
+  }
 }

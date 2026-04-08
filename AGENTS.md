@@ -63,13 +63,40 @@ id, name, address, prefecture, city, phone, business_hours, closed_days, style, 
 id (UUID, auth.users参照), username, avatar_url, review_count, created_at
 
 ### reviews（レビュー）
-id, user_id, shop_id, overall_score (1-100), dough_score (1-5), ingredients_score (1-5), sauce_score (1-5), comment, visited_at, image_url, image_urls (TEXT[]), created_at
+id, user_id, shop_id, overall_score (自動計算: 6項目合計/30×100), noodle_score (1-5), cabbage_score (1-5), egg_score (1-5), sauce_score (1-5), balance_score (1-5), teppan_score (1-5), order_menu (VARCHAR), toppings (TEXT[]), eating_style (VARCHAR), comment, visited_at, image_url, image_urls (TEXT[]), created_at
 
 ### favorites（お気に入り）
 id, user_id, shop_id, created_at, UNIQUE(user_id, shop_id)
 
 ### shop_requests（店舗登録申請）
 id, user_id, name, address, prefecture, city, phone, business_hours, closed_days, style, cooking_style, has_iron_plate, takeout_available, latitude, longitude, status, created_at
+
+## 評価ロジック（広島風お好み焼き専用）
+
+### スコア項目（各1〜5点）
+- **noodle_score**: 麺（食感・焼き加減）
+- **cabbage_score**: キャベツ（甘み・シャキシャキ感）
+- **egg_score**: 玉子（焼き加減・ふわふわ感）
+- **sauce_score**: ソース（風味・濃さ）
+- **balance_score**: 全体バランス（調和・まとまり）
+- **teppan_score**: 鉄板体験（雰囲気・演出）
+
+### 総合スコアの計算式
+```
+overall_score = ROUND((noodle_score + cabbage_score + egg_score + 
+                       sauce_score + balance_score + teppan_score) / 30 × 100, 1)
+```
+- 6項目の合計（最大30点）を100点満点に正規化
+- フロントエンド側で自動計算してから Supabase に保存
+- ランキング表示は overall_score の平均値でソート
+
+### 注文記録項目
+- **order_menu**: 注文したメニュー名（プルダウン選択）
+  - 例: 肉玉そば、肉玉うどん、スペシャル、等
+- **toppings**: トッピング（チェックボックスで複数選択可能、TEXT[] 配列）
+  - 例: ['ネギ', 'チーズ', 'もち', 'イカ天']
+- **eating_style**: 食べ方スタイル（プルダウン選択）
+  - 例: 鉄板で直接、皿に取り分け、持ち帰り
 
 ## コーディング規約
 
